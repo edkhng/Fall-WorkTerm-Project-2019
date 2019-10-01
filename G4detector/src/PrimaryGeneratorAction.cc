@@ -60,7 +60,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   }  
 
   // Set gun position, energy, type
-  fPrimaryGenerator->SetParticlePosition(G4ThreeVector(-20 * m, -10 * m, -62.5* m));
+  fPrimaryGenerator->SetParticlePosition(G4ThreeVector(-0 * m, 0 * m, 0 * m));
   //fPrimaryGenerator->SetParticlePosition(G4ThreeVector(-20 * m, -62.5 * m, -10 * m));
   fPrimaryGenerator->SetParticleEnergy(energy);
   fPrimaryGenerator->SetParticleType(type);

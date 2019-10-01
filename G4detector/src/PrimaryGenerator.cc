@@ -86,6 +86,32 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
 		event->AddPrimaryVertex(vertexA);
 	}
 
+	if (ftype == 4) {
+		//vertex A
+		G4double timeA = 0 * s;
+		// 
+		G4PrimaryVertex* vertexA = new G4PrimaryVertex(fpos, timeA);
+
+		//Charged lepton at vertex A
+		//
+		G4ParticleDefinition* particleDefinition
+			= G4ParticleTable::GetParticleTable()->FindParticle("opticalphoton");
+		G4PrimaryParticle* particle1 = new G4PrimaryParticle(particleDefinition);
+		G4double phi = G4UniformRand() * 360 * deg;
+		G4double theta = G4UniformRand() * 180 * deg;
+		G4double uz = std::cos(theta);
+		G4double ux = std::sin(theta) * std::cos(phi);
+		G4double uy = std::sin(theta) * std::sin(phi);
+
+		particle1->SetMomentumDirection(G4ThreeVector(ux, uy, uz));
+		//particle1->SetMomentumDirection(G4ThreeVector(0, 1, 0));
+		particle1->SetKineticEnergy(fenergy);
+		//
+		vertexA->SetPrimary(particle1);
+		//G4cout << "mu: " << fenergy / TeV << G4endl;
+		event->AddPrimaryVertex(vertexA);
+	}
+
 	else if (ftype == 0) {
 		//vertex B
 		G4double timeB = 0 * s;
@@ -139,14 +165,14 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
 	
 	/* Uniform light source
 	G4ParticleDefinition* OpPhoton = G4ParticleTable::GetParticleTable()->FindParticle("opticalphoton");
-	G4double phi = G4UniformRand() * 360 * deg; 
+	G4double phi = G4UniformRand() * 360 * deg;
 	G4double theta = G4UniformRand() * 180 * deg;
 	G4double uz = std::cos(theta);
 	G4double ux = std::sin(theta) * std::cos(phi);
-	G4double uy = std::sin(theta) * std::sin(phi); 
-	particle->SetMomentumDirection(G4ThreeVector(ux, uy, uz));
+	G4double uy = std::sin(theta) * std::sin(phi);
 	G4PrimaryParticle* particle = new G4primaryParticle(OpPhoton);
-        vertexB->AddPrimary(particle);
+		vertexB->AddPrimary(particle);
 	event->AddprimaryVertex(vertexB)
-  	*/
+	*/
+
 }

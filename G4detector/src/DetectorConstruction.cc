@@ -75,7 +75,7 @@ void DetectorConstruction::DefineMaterials() {
 	{ 32.3*m, 19.0*m, 10.6 * m };
 	assert(sizeof(mie) == sizeof(photonEnergy));
 
-	G4double MIE_water_const[3] = { 0.9204, 0.1491, 0.8831 };
+	G4double MIE_water_const[3] = { 0.9204, -0.1491, 0.8831 };
 
 	// Mar-19 STRAW data by Matthew Man
 	

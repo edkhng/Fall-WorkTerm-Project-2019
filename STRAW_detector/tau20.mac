@@ -1,0 +1,5 @@
+/Ex/energy 20 TeV
+# 0-had
+# 1-tau
+/Ex/type 1
+/run/beamOn 1

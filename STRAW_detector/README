@@ -1,0 +1,28 @@
+HOW TO RUN
+
+    - Execute Ex in the 'interactive mode':
+      % ./Ex
+      set the energy
+        Idle> /Ex/energy 20 TeV
+	  choose the type of the particle
+        Idle> /Ex/type 1
+	  run the simulation
+        Idle> /run/beamOn 1
+		
+        Idle> ...
+        Idle> exit
+      To enable visualization, the code in src/TrackingAction.cc must be modified
+	  fpTrackingManager->SetStoreTrajectory(true)
+      The trajectory information will be stored in RAM, be sure to assign enough memory to avoid crush 
+
+    - Execute in the 'batch' mode from macro files 
+	  % ./Ex [-m macro ] [-e eventid] [-f filename]
+      example macro file: tau20.mac, had20.mac
+	  The seed of the random engine is the same as the event ID. 
+	  The default event ID is zero. 
+	  The event ID is increased by one after each event.
+	  filename: name of the output file.
+	  
+     
+
+	

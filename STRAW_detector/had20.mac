@@ -1,0 +1,6 @@
+/Ex/energy 20 TeV
+# type 0-hadron shower
+# type 1-tau
+# type 2-electron
+/Ex/type 0
+/run/beamOn 1

@@ -37,18 +37,27 @@ void DetectorConstruction::DefineMaterials() {
 
 	 // Get nist material manager
 	G4NistManager* nist = G4NistManager::Instance();
-	G4double density;
-	G4double temp;
-	G4int ncomponents;
+	//G4double density;
+	//G4double temp;
+	//G4int ncomponents;
 
 	// Water
 	Water = nist->FindOrBuildMaterial("G4_WATER");
 	
 	// Seawater
-	density = 1.04*g / cm3;
-	temp = 283.15*kelvin;
-	Seawater = new G4Material("SeaWater", density, ncomponents = 4, kStateLiquid, temp);
-	G4Element* Cl = nist->FindOrBuildElement("Cl");
+	G4double atomicNumber = 1.;
+	G4double massOfMole = 1.008 * g / mole;
+	G4double density = 1.e-25 * g / cm3;
+	G4double temperature = 2.73 * kelvin;
+	G4double pressure = 3.e-18 * pascal;
+	Seawater =
+		new G4Material("SeaWater", atomicNumber,
+			massOfMole, density, kStateGas,
+			temperature, pressure);
+	//density = 1.04*g / cm3;
+	//temp = 283.15*kelvin;
+	//Seawater = new G4Material("SeaWater", density, ncomponents = 4, kStateLiquid, temp);
+	/*G4Element* Cl = nist->FindOrBuildElement("Cl");
 	G4Element* Na = nist->FindOrBuildElement("Na");
 	G4Element* Mg = nist->FindOrBuildElement("Mg");
 	Seawater->AddMaterial(Water, 96.88 * perCent); //fractional mass
@@ -72,7 +81,7 @@ void DetectorConstruction::DefineMaterials() {
 	assert(sizeof(absorption) == sizeof(photonEnergy));
 
 	G4double mie[] =
-	{ 32.3*m, 19.0*m, 10.6 * m };
+	{ 32.3*m, 19.0*m, 10.6*m };
 	assert(sizeof(mie) == sizeof(photonEnergy));
 
 	G4double MIE_water_const[3] = { 0.9204, 0.1491, 0.8831 };
@@ -86,14 +95,14 @@ void DetectorConstruction::DefineMaterials() {
 	MPT_Seawater->AddProperty("ABSLENGTH", photonEnergy, absorption, nEntries)->SetSpline(true);
 
 
-	/* sea waterm only MieHG enabled, comment out the following four lines for pure water simulaiton*/
+	// sea waterm only MieHG enabled, comment out the following four lines for pure water simulaiton
 	MPT_Seawater->AddProperty("MIEHG", photonEnergy, mie, nEntries)->SetSpline(true);
 	MPT_Seawater->AddConstProperty("MIEHG_FORWARD",MIE_water_const[0]);
 	MPT_Seawater->AddConstProperty("MIEHG_BACKWARD",MIE_water_const[1]);
 	MPT_Seawater->AddConstProperty("MIEHG_FORWARD_RATIO",MIE_water_const[2]);
 
 
-	Seawater->SetMaterialPropertiesTable(MPT_Seawater);
+	Seawater->SetMaterialPropertiesTable(MPT_Seawater);*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////

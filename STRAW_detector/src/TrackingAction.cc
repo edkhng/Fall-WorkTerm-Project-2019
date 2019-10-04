@@ -6,11 +6,11 @@ void TrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 {
 	if (aTrack->GetParentID() == 0)
 	{	// true: only store trajectory information for the primary particle
-		fpTrackingManager->SetStoreTrajectory(false);
+		fpTrackingManager->SetStoreTrajectory(true);
 	}
 	else
 	{
-		fpTrackingManager->SetStoreTrajectory(false);
+		fpTrackingManager->SetStoreTrajectory(true);
 		// used to monitor the process
 		//if (aTrack->GetParentID() == 1 && aTrack->GetCreatorProcess()->GetProcessName() == "Decay") {
 		//	G4ThreeVector pos = aTrack->GetVertexPosition();

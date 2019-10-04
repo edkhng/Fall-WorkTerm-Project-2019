@@ -58,11 +58,11 @@
 #/vis/scene/add/hits
 #
 # To draw only opp:
-/vis/filtering/trajectories/create/particleFilter
-/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add gamma
 #
 # To invert the above, drawing all particles except opp
-/vis/filtering/trajectories/particleFilter-0/invert true
+#/vis/filtering/trajectories/particleFilter-0/invert true
 #
 # Many other options are available with /vis/modeling and /vis/filtering.
 # For example, to select colour by particle ID:
@@ -81,6 +81,7 @@
 /vis/modeling/trajectories/drawByParticleID-0/set pi0 magenta
 /vis/modeling/trajectories/drawByParticleID-0/set neutron green
 /vis/modeling/trajectories/drawByParticleID-0/set proton yellow
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
 #
 #
 # To superimpose all of the events from a given run:

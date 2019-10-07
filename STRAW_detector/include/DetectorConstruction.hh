@@ -8,7 +8,7 @@
 // number of PMTs
 const G4int kDimX = 2;
 const G4int kDimY = 1;
-const G4int kDimZ = 6;
+const G4int kDimZ = 3;
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;

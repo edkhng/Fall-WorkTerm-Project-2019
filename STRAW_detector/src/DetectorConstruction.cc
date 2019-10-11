@@ -1,4 +1,4 @@
-﻿#include "DetectorConstruction.hh"
+#include "DetectorConstruction.hh"
 #include "PMTSD.hh"
 
 #include "G4RunManager.hh"
@@ -17,6 +17,7 @@
 
 #include "G4VSDFilter.hh"
 #include "G4SDParticleFilter.hh"
+#include <math.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +44,7 @@ void DetectorConstruction::DefineMaterials() {
 
 	// Water
 	Water = nist->FindOrBuildMaterial("G4_WATER");
-	
+
 	// Seawater
 
 	density = 1.04*g / cm3;
@@ -79,7 +80,7 @@ void DetectorConstruction::DefineMaterials() {
 	G4double MIE_water_const[3] = { 0.9204, 0.1491, 0.8831 };
 
 	// Mar-19 STRAW data by Matthew Man
-	
+
 
 	G4MaterialPropertiesTable* MPT_Seawater = new G4MaterialPropertiesTable();
 
@@ -100,12 +101,10 @@ void DetectorConstruction::DefineMaterials() {
 ///////////////////////////////////////////////////////////////////////////////
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
-{  
+{
   // Parameters
   // Detector size
-  G4double world_sizeX = 74 * m, world_sizeY = 37 * m, world_sizeZ = 140 * m;
-  G4double box_sizeX = 74 * m, box_sizeY = 37 * m, box_sizeZ = 60 * m;
-  G4ThreeVector box_pos = G4ThreeVector(0 * m, 0 * m, 0 * m);
+  G4double world_radius = 100 * m;
   // PMT size, PMT number can be adjusted in DetectorConstruction.hh
   G4double det_radius = 355 * mm / 2;
 
@@ -113,121 +112,50 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4bool checkOverlaps = true;
 
   // World
-  G4Box* solidWorld =    
-    new G4Box("World", 0.5*world_sizeX, 0.5*world_sizeY, 0.5*world_sizeZ);
-      
-  G4LogicalVolume* logicWorld =                         
-    new G4LogicalVolume(solidWorld, Seawater, "WorldLV"); //solid, material, name
-                                 
-  G4VPhysicalVolume* physWorld = 
-    new G4PVPlacement(0,                     //no rotation
-                      G4ThreeVector(),       //at (0,0,0)
-                      logicWorld,            //its logical volume
-                      "World",               //its name
-                      0,                     //its mother volume
-                      false,                 //no boolean operation
-                      0,                     //copy number
-                      checkOverlaps);        //overlaps checking
-                     
-  // detector box  
-  G4Box* solidbox = 
-	new G4Box("Box", 0.5*box_sizeX, 0.5*box_sizeY, 0.5*box_sizeZ);
-      
-  G4LogicalVolume* logicbox =                         
-    new G4LogicalVolume(solidbox, Seawater, "BoxLV"); //solid, material, name
-               
-  new G4PVPlacement(0,                       //rotation
-					box_pos,                 //position
-                    logicbox,                //its logical volume
-                    "Box",                   //its name
-                    logicWorld,              //its mother  volume
-                    false,                   //no boolean operation
-                    0,                       //copy number
-                    checkOverlaps);          //overlaps checking
- 
-  // Layer X
-  G4Box* solidLayer =
-	  new G4Box("Layer", 0.5*box_sizeX/kDimX, 0.5*box_sizeY, 0.5*box_sizeZ);
 
-  G4LogicalVolume* logicLayer =
-	  new G4LogicalVolume(solidLayer, Seawater, "LayerLV");
- 
-  new G4PVReplica(
-	  "Layer",             //its name
-	  logicLayer,          //its logical volume
-	  logicbox,            //its mother
-	  kXAxis,              //axis of replication
-	  kDimX,               //number of replica
-	  box_sizeX / kDimX);  // witdth of replica
-
-  // Column Y
-  G4Box* solidColumn =
-	  new G4Box("Column", 0.5*box_sizeX/kDimX, 0.5*box_sizeY/kDimY, 0.5*box_sizeZ);
-
-  G4LogicalVolume* logicColumn =
-	  new G4LogicalVolume(solidColumn, Seawater, "ColumnLV");
-
-  new G4PVReplica(
-	  "Column",             //its name
-	  logicColumn,          //its logical volume
-	  logicLayer,            //its mother
-	  kYAxis,              //axis of replication
-	  kDimY,               //number of replica
-	  box_sizeY / kDimY);  // witdth of replica
-
-  // Cell Z
-  G4Box* solidCell =
-	  new G4Box("Cell", 0.5*box_sizeX/kDimX, 0.5*box_sizeY/kDimY, 0.5*box_sizeZ/kDimY);
-
-  G4LogicalVolume* logicCell =
-	  new G4LogicalVolume(solidCell, Seawater, "CellLV");
-
-  new G4PVReplica(
-	  "Cell",                  //its name
-	  logicCell,               //its logical volume
-	  logicColumn,             //its mother
-	  kZAxis,                  //axis of replication
-	  kDimZ,                   //number of replica
-	  box_sizeZ / kDimZ);      // witdth of replica
+  G4Orb* solidWorld = new G4Orb("World", world_radius);
+  G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld, Seawater, "WorldLV");
+  G4VPhysicalVolume* physWorld = new G4PVPlacement(0, G4ThreeVector(), logicWorld,
+	  "World", 0, false, 0, checkOverlaps);
 
 
   // sensitive detector
-  G4Orb* solidDet =
-	  new G4Orb("Det", det_radius);
 
-  flogicDet =
-	  new G4LogicalVolume(solidDet, Seawater, "DetLV");
+  for (int i = 0; i < 21; i++) {
+	  for (int j = 0; j < 21; j++) {
 
-  new G4PVPlacement(0,            //no rotation
-	  G4ThreeVector(),            //at (0,0,0)
-	  flogicDet,                  //its logical volume
-	  "Det",                      //its name
-	  logicCell,                  //its mother  volume
-	  false,                      //no boolean operation
-	  0,                          //copy number
-	  checkOverlaps);             //overlaps checking
+		  G4String name = "Det";
+		  G4Orb* solidDet = new G4Orb(name, det_radius);
 
+		  flogicDet =
+			  new G4LogicalVolume(solidDet, Seawater, "DetLV");
 
+		  G4double phi = 2 * std::acos(-1) * j / 20;
+		  G4double theta = 2 * std::acos(-1) * (i - 0.5) / 20;
 
-  // visualization attributes 
+		  G4double z = sqrt(2969) * std::cos(theta) * m;
+		  G4double x = sqrt(2969) * std::sin(theta) * std::cos(phi) * m;
+		  G4double y = sqrt(2969) * std::sin(theta) * std::sin(phi) * m;
+
+		  new G4PVPlacement(0, G4ThreeVector(x, y, z), flogicDet, name, logicWorld, false, 0, checkOverlaps);
+
+	  }
+  }
+
+  // visualization attributes
 
   auto visAttributes = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));
-  visAttributes->SetVisibility(false);
-  logicCell->SetVisAttributes(visAttributes);
-  logicColumn->SetVisAttributes(visAttributes);
-  logicLayer->SetVisAttributes(visAttributes);
-  logicbox->SetVisAttributes(visAttributes);
-  visAttributes = new G4VisAttributes(G4Colour(0.5, 0.5, 0.5)); // LightGray
   flogicDet->SetVisAttributes(visAttributes);
 
   return physWorld;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void DetectorConstruction::ConstructSDandField()
 {
-	// 
+	//
 	// Sensitive detectors
 	//
 	auto SDManager = G4SDManager::GetSDMpointer();
@@ -241,7 +169,6 @@ void DetectorConstruction::ConstructSDandField()
 	G4SDParticleFilter* OpPhotonFilter =
 		new G4SDParticleFilter("OpPhotonFilter", "opticalphoton");
 	PMTSD1->SetFilter(OpPhotonFilter);
-	
-}
 
+}
 ///////////////////////////////////////////////////////////////////////////////

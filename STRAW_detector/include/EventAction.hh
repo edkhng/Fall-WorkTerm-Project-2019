@@ -20,17 +20,17 @@ public:
 	virtual void  BeginOfEventAction(const G4Event* event);
 	virtual void  EndOfEventAction(const G4Event* event);
 
-	void IncPhotonCount_Ceren() { fPhotonCount_Ceren++; }
+	//void IncPhotonCount_Ceren() { fPhotonCount_Ceren++; }
 	//void IncAbsorption() { fAbsorptionCount++; }
 
-	G4int GetPhotonCount_Ceren()const { return fPhotonCount_Ceren; }
+	//G4int GetPhotonCount_Ceren()const { return fPhotonCount_Ceren; }
 	//G4int GetAbsorptionCount()const { return fAbsorptionCount; }
 
 private:
-	PMTHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;    
+	PMTHitsCollection* GetHitsCollection(G4int hcID, const G4Event* event) const;
 	G4int  fPMTHCID;
 
-	G4int fPhotonCount_Ceren;
+	//G4int fPhotonCount_Ceren;
 	//G4int fAbsorptionCount;
 
 };

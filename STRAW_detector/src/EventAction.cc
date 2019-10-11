@@ -59,7 +59,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
 	if (!hc) return;
 	auto nhit = hc->GetSize();
 	G4int eid = event->GetEventID();
-	analysisManager->FillNtupleIColumn(8, eid);
+	analysisManager->FillNtupleIColumn(1, eid);
 
 	G4cout << "End of Event, Event ID:" << eid << G4endl;
 	G4cout<< "Number of Hit: " <<nhit<<G4endl;
@@ -68,21 +68,9 @@ void EventAction::EndOfEventAction(const G4Event* event)
 		// Fill Ntuple
 		auto hit = static_cast<PMTHit*>(hc->GetHit(i));
 		auto Time = hit->GetTime();
-		auto Energy = hit->GetEnergy();
-		auto WorldPos = hit->GetWorldPos();
-		auto layerID = hit->GetLayerID();
-		auto columnID = hit->GetColumnID();
-		auto cellID = hit->GetCellID();
-		
-		analysisManager->FillNtupleIColumn(0, layerID);
-		analysisManager->FillNtupleIColumn(1, columnID);
-		analysisManager->FillNtupleIColumn(2, cellID);
-		analysisManager->FillNtupleDColumn(3, Time);
 
-		analysisManager->FillNtupleDColumn(4, WorldPos.x());
-		analysisManager->FillNtupleDColumn(5, WorldPos.y());
-		analysisManager->FillNtupleDColumn(6, WorldPos.z());
-		analysisManager->FillNtupleDColumn(7, Energy);
+		analysisManager->FillNtupleDColumn(0, Time);
+
 
 		analysisManager->AddNtupleRow();
 	}

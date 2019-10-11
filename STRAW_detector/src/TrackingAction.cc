@@ -21,5 +21,3 @@ void TrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 		//}
 	}
 }
-
-

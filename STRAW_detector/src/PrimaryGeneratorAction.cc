@@ -17,8 +17,7 @@
 PrimaryGeneratorAction::PrimaryGeneratorAction()
 	: G4VUserPrimaryGeneratorAction(),
 	fPrimaryGenerator(0),
-	eventID(0),
-	energy(0)
+	eventID(0)
 {
   fPrimaryGenerator = new PrimaryGenerator();
   fPrimaryGeneratorMessenger = new PrimaryGeneratorMessenger(this);
@@ -55,12 +54,12 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if ( worldBox ) {
 	worldHalfSizeX = worldBox->GetXHalfLength();
 	worldHalfSizeY = worldBox->GetYHalfLength();
-    worldHalfSizeZ = worldBox->GetZHalfLength();
+  worldHalfSizeZ = worldBox->GetZHalfLength();
   }
 
   // Set gun position, energy
   fPrimaryGenerator->SetParticlePosition(G4ThreeVector(	0 * m, 0 * m, 0 * m));
-  fPrimaryGenerator->SetParticleEnergy(energy);
+  // fPrimaryGenerator->SetParticleEnergy(energy);
   fPrimaryGenerator->GeneratePrimaryVertex(anEvent);
 }
 

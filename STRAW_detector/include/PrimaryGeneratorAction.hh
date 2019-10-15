@@ -21,13 +21,13 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     virtual void GeneratePrimaries(G4Event*);
 
 	void SetEventID(G4int ID) { eventID = ID; }
-	void SetParticleEnergy(G4double Energy) { energy = Energy; }
+	// void SetParticleEnergy(G4double Energy) { energy = Energy; }
 
   private:
 	PrimaryGenerator* fPrimaryGenerator;
     G4Box* worldBox;
 	G4int eventID;
-	G4int energy;
+	// G4int energy;
 	PrimaryGeneratorMessenger* fPrimaryGeneratorMessenger;
 };
 

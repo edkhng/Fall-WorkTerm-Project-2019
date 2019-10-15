@@ -24,10 +24,10 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* pri
   fEventIDcmd->SetToBeBroadcasted(false);
 
   // set prinary particle energy
-  fEnergycmd = new G4UIcmdWithADoubleAndUnit("/Ex/energy", this);
-  fEnergycmd->SetGuidance("Set Total Energy");
-  fEnergycmd->AvailableForStates(G4State_PreInit, G4State_Idle);
-  fEnergycmd->SetToBeBroadcasted(false);
+  // fEnergycmd = new G4UIcmdWithADoubleAndUnit("/Ex/energy", this);
+  // fEnergycmd->SetGuidance("Set Total Energy");
+  // fEnergycmd->AvailableForStates(G4State_PreInit, G4State_Idle);
+  // fEnergycmd->SetToBeBroadcasted(false);
 
 }
 
@@ -36,7 +36,7 @@ PrimaryGeneratorMessenger::PrimaryGeneratorMessenger(PrimaryGeneratorAction* pri
 PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
 {
   delete fEventIDcmd;
-  delete fEnergycmd;
+  // delete fEnergycmd;
   delete fEventDir;
 }
 
@@ -47,7 +47,7 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
 	if (command == fEventIDcmd) {
 		fPrimaryAction->SetEventID(fEventIDcmd->GetNewIntValue(newValue));
 	}
-	else if (command == fEnergycmd) {
-		fPrimaryAction->SetParticleEnergy(fEnergycmd->GetNewDoubleValue(newValue));
-	}
+	// else if (command == fEnergycmd) {
+	// 	fPrimaryAction->SetParticleEnergy(fEnergycmd->GetNewDoubleValue(newValue));
+	// }
 }

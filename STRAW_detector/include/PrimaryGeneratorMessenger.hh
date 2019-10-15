@@ -7,7 +7,7 @@
 class PrimaryGeneratorAction;
 class G4UIdirectory;
 class G4UIcmdWithAnInteger;
-class G4UIcmdWithADoubleAndUnit;
+// class G4UIcmdWithADoubleAndUnit;
 class G4UIcommand;
 
 
@@ -29,7 +29,7 @@ class PrimaryGeneratorMessenger : public G4UImessenger
 	PrimaryGeneratorAction* fPrimaryAction;
 	G4UIdirectory* fEventDir;
 	G4UIcmdWithAnInteger* fEventIDcmd;
-	G4UIcmdWithADoubleAndUnit* fEnergycmd;
+	// G4UIcmdWithADoubleAndUnit* fEnergycmd;
 };
 
 

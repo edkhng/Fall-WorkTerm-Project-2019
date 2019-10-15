@@ -43,7 +43,7 @@ void DetectorConstruction::DefineMaterials() {
 
 	// Water
 	Water = nist->FindOrBuildMaterial("G4_WATER");
-	
+
 	// Seawater
 
 	density = 1.04*g / cm3;
@@ -79,7 +79,7 @@ void DetectorConstruction::DefineMaterials() {
 	G4double MIE_water_const[3] = { 0.9204, 0.1491, 0.8831 };
 
 	// Mar-19 STRAW data by Matthew Man
-	
+
 
 	G4MaterialPropertiesTable* MPT_Seawater = new G4MaterialPropertiesTable();
 
@@ -100,7 +100,7 @@ void DetectorConstruction::DefineMaterials() {
 ///////////////////////////////////////////////////////////////////////////////
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
-{  
+{
   // Parameters
   // Detector size
   G4double world_sizeX = 74 * m, world_sizeY = 37 * m, world_sizeZ = 140 * m;
@@ -113,13 +113,13 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4bool checkOverlaps = true;
 
   // World
-  G4Box* solidWorld =    
+  G4Box* solidWorld =
     new G4Box("World", 0.5*world_sizeX, 0.5*world_sizeY, 0.5*world_sizeZ);
-      
-  G4LogicalVolume* logicWorld =                         
+
+  G4LogicalVolume* logicWorld =
     new G4LogicalVolume(solidWorld, Seawater, "WorldLV"); //solid, material, name
-                                 
-  G4VPhysicalVolume* physWorld = 
+
+  G4VPhysicalVolume* physWorld =
     new G4PVPlacement(0,                     //no rotation
                       G4ThreeVector(),       //at (0,0,0)
                       logicWorld,            //its logical volume
@@ -128,14 +128,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       false,                 //no boolean operation
                       0,                     //copy number
                       checkOverlaps);        //overlaps checking
-                     
-  // detector box  
-  G4Box* solidbox = 
+
+  // detector box
+  G4Box* solidbox =
 	new G4Box("Box", 0.5*box_sizeX, 0.5*box_sizeY, 0.5*box_sizeZ);
-      
-  G4LogicalVolume* logicbox =                         
+
+  G4LogicalVolume* logicbox =
     new G4LogicalVolume(solidbox, Seawater, "BoxLV"); //solid, material, name
-               
+
   new G4PVPlacement(0,                       //rotation
 					box_pos,                 //position
                     logicbox,                //its logical volume
@@ -144,14 +144,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                     false,                   //no boolean operation
                     0,                       //copy number
                     checkOverlaps);          //overlaps checking
- 
+
   // Layer X
   G4Box* solidLayer =
 	  new G4Box("Layer", 0.5*box_sizeX/kDimX, 0.5*box_sizeY, 0.5*box_sizeZ);
 
   G4LogicalVolume* logicLayer =
 	  new G4LogicalVolume(solidLayer, Seawater, "LayerLV");
- 
+
   new G4PVReplica(
 	  "Layer",             //its name
 	  logicLayer,          //its logical volume
@@ -209,7 +209,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 
 
-  // visualization attributes 
+  // visualization attributes
 
   auto visAttributes = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));
   visAttributes->SetVisibility(false);
@@ -227,7 +227,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
 void DetectorConstruction::ConstructSDandField()
 {
-	// 
+	//
 	// Sensitive detectors
 	//
 	auto SDManager = G4SDManager::GetSDMpointer();
@@ -241,7 +241,7 @@ void DetectorConstruction::ConstructSDandField()
 	G4SDParticleFilter* OpPhotonFilter =
 		new G4SDParticleFilter("OpPhotonFilter", "opticalphoton");
 	PMTSD1->SetFilter(OpPhotonFilter);
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

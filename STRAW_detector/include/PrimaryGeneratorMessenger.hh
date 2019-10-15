@@ -13,7 +13,7 @@ class G4UIcommand;
 
 /// The primary generator action class with particle gun.
 ///
-/// The default kinematic is a 6 MeV gamma, randomly distribued 
+/// The default kinematic is a 6 MeV gamma, randomly distribued
 /// in front of the phantom across 80% of the (X,Y) phantom size.
 
 class PrimaryGeneratorMessenger : public G4UImessenger
@@ -24,13 +24,12 @@ class PrimaryGeneratorMessenger : public G4UImessenger
     virtual ~PrimaryGeneratorMessenger();
 
     virtual void SetNewValue(G4UIcommand*, G4String);
-  
+
   private:
 	PrimaryGeneratorAction* fPrimaryAction;
 	G4UIdirectory* fEventDir;
 	G4UIcmdWithAnInteger* fEventIDcmd;
 	G4UIcmdWithADoubleAndUnit* fEnergycmd;
-	G4UIcmdWithAnInteger* fTypecmd;
 };
 
 

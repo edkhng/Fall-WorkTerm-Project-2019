@@ -37,7 +37,6 @@ PrimaryGeneratorMessenger::~PrimaryGeneratorMessenger()
 {
   delete fEventIDcmd;
   delete fEnergycmd;
-  delete fTypecmd;
   delete fEventDir;
 }
 
@@ -51,8 +50,4 @@ void PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* command, G4String newVa
 	else if (command == fEnergycmd) {
 		fPrimaryAction->SetParticleEnergy(fEnergycmd->GetNewDoubleValue(newValue));
 	}
-	else if (command == fTypecmd) {
-		fPrimaryAction->SetParticleType(fTypecmd->GetNewIntValue(newValue));
-	}
 }
-

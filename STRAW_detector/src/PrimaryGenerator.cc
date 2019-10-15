@@ -14,8 +14,7 @@
 PrimaryGenerator::PrimaryGenerator()
 : G4VPrimaryGenerator(),
   fpos(0,0,0),
-  fenergy(0),
-  ftype(0)
+  fenergy(0)
 { }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,7 +49,7 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
 			particle1->SetMomentumDirection(G4ThreeVector(ux, uy, uz));
 			particle1->SetPolarization(G4ThreeVector(ux, uy, uz));
 
-			particle1->SetKineticEnergy(3.061*eV);
+			particle1->SetKineticEnergy(fenergy);
 			vertexA->SetPrimary(particle1);
 		}
 		event->AddPrimaryVertex(vertexA);

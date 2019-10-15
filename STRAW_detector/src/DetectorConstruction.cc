@@ -124,8 +124,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   for (int i = 0; i < 21; i++) {
 	  for (int j = 0; j < 21; j++) {
 
-		  G4String name = "Det";
-		  G4Orb* solidDet = new G4Orb(name, det_radius);
+		  G4Orb* solidDet = new G4Orb("Det", det_radius);
 
 		  flogicDet =
 			  new G4LogicalVolume(solidDet, Seawater, "DetLV");
@@ -137,7 +136,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 		  G4double x = sqrt(2969) * std::sin(theta) * std::cos(phi) * m;
 		  G4double y = sqrt(2969) * std::sin(theta) * std::sin(phi) * m;
 
-		  new G4PVPlacement(0, G4ThreeVector(x, y, z), flogicDet, name, logicWorld, false, 0, checkOverlaps);
+		  new G4PVPlacement(0, G4ThreeVector(x, y, z), flogicDet, "Det", logicWorld, false, 0, checkOverlaps);
 
 	  }
   }

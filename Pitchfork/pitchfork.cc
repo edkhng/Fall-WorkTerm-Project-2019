@@ -94,7 +94,7 @@ public:
 		// Parameters
 	  // Detector size
 	  G4double world_radius = 100 * m;
-	  G4double det_radius = 355 * cm / 4;
+	  G4double det_radius = 355 * mm / 2;
 
 		// Check volumes overlaps
 		G4bool checkOverlaps = true;
@@ -106,11 +106,11 @@ public:
 
 		for (int i = 0; i < 21; i++) {
 			for (int j = 0; j < 21; j++) {
-
-				G4Orb* solidDet = new G4Orb("Det", det_radius);
+				G4String name = "d_" + std::to_string(i) + "_" + std::to_string(j);
+				G4Orb* solidDet = new G4Orb(name, det_radius);
 
 				G4LogicalVolume* flogicDet =
-					new G4LogicalVolume(solidDet, Seawater, "Det");
+					new G4LogicalVolume(solidDet, Seawater, name);
 
 				G4double phi = 2 * std::acos(-1) * j / 20;
 				G4double theta = 2 * std::acos(-1) * (i - 0.5) / 20;
@@ -119,7 +119,7 @@ public:
 				G4double x = sqrt(2969) * std::sin(theta) * std::cos(phi) * m;
 				G4double y = sqrt(2969) * std::sin(theta) * std::sin(phi) * m;
 
-				new G4PVPlacement(0, G4ThreeVector(x, y, z), flogicDet, "Det", logicWorld, false, 0, checkOverlaps);
+				new G4PVPlacement(0, G4ThreeVector(x, y, z), flogicDet, name, logicWorld, false, 0, checkOverlaps);
 
 			}
 		}
@@ -168,7 +168,7 @@ public:
 		G4TouchableHandle geometry = startpoint->GetTouchableHandle();
 		G4String volumeName = geometry->GetVolume()->GetName();
 		static bool first = true;
-		if (volumeName.substr(0,2) == "Det"){
+		if (volumeName.substr(0,2) == "d_"){
 			G4double time = startpoint->GetGlobalTime()/ns;
 			G4ThreeVector position = startpoint->GetPosition();
 			G4ThreeVector direction = startpoint->GetMomentumDirection();

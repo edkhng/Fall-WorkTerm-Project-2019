@@ -46,8 +46,8 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
 			// G4double phi = G4UniformRand() * 360 * deg; //uniformly distributed
 			// G4double theta = Randexp->shoot() / 3.1415926 * 0.5 * deg; //exponential distribution
 
-			G4double phi = G4UniformRand() * 2 * 3.14159;
-			G4double theta = std::acos(1 - 0.00001 * G4UniformRand());
+			G4double phi = G4UniformRand() * 2 * std::acos(-1);
+			G4double theta = std::acos(1 - 0.05 * G4UniformRand());
 
 			G4double uz = - std::cos(theta);
 			G4double ux = std::sin(theta) * std::cos(phi);

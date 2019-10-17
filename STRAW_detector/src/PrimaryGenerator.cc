@@ -35,7 +35,7 @@ void PrimaryGenerator::GeneratePrimaryVertex(G4Event* event)
 		G4ParticleDefinition* particleDefinition
 			= G4ParticleTable::GetParticleTable()->FindParticle("opticalphoton");
 
-		for (int i = 0; i < 200000; i++) {
+		for (int i = 0; i < 5000000; i++) {
 
 			G4double phi = G4UniformRand() * 2 * std::acos(-1);
 			G4double theta = std::acos(1 - 2 * G4UniformRand());

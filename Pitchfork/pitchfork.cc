@@ -1,5 +1,5 @@
 /* created 2019-10-07 by Andreas Gaertner
-based on the 2015 POCAM simulation by Kai Krings for the PINGU collaboration */ 
+based on the 2015 POCAM simulation by Kai Krings for the PINGU collaboration */
 
 #include "FTFP_BERT.hh"
 #include "G4MuonMinus.hh"
@@ -19,11 +19,11 @@ based on the 2015 POCAM simulation by Kai Krings for the PINGU collaboration */
 using namespace std;
 
 map<string, double> var = {
-	{"WorldRadius", 10},
-	{"DetectorRadius", 0.5},
+	{"WorldRadius", 100},
+	{"DetectorRadius", 0.1775},
 	{"SourceZ", 0},
 	{"OpeningAngle", 180},
-	{"RefractiveIndex", 1.3},
+	{"RefractiveIndex", 1.333},
 	{"AbsorptionLength", 50},
 	{"ScatteringLength", 50},
 	{"n", 0},
@@ -33,33 +33,97 @@ map<string, double> var = {
 class PitchforkDetectorConstruction : public G4VUserDetectorConstruction{
 public:
 	PitchforkDetectorConstruction(): G4VUserDetectorConstruction(){}
-    virtual G4VPhysicalVolume* Construct(){  
+    virtual G4VPhysicalVolume* Construct(){
+		// Get nist material manager
 		G4NistManager* nist = G4NistManager::Instance();
+		G4double density;
+		G4double temp;
+		G4int ncomponents;
+		G4Material* Water = nist->FindOrBuildMaterial("G4_WATER");
 
-		G4Material* water = nist->FindOrBuildMaterial("G4_WATER");
-		const size_t entries = 2;
-		G4double PhotonEnergy [entries] = {1*eV, 10*eV};
-		G4double RefractiveIndex [entries] = {var["RefractiveIndex"], var["RefractiveIndex"]};
-		G4double AbsorptionLength [entries] = {var["AbsorptionLength"]*m, var["AbsorptionLength"]*m};
-		G4double ScatteringLength [entries] = {var["ScatteringLength"]*m, var["ScatteringLength"]*m};
-		G4MaterialPropertiesTable* wp = new G4MaterialPropertiesTable();
-		wp->AddProperty("RINDEX", PhotonEnergy, RefractiveIndex, entries);
-		wp->AddProperty("ABSLENGTH", PhotonEnergy, AbsorptionLength, entries);
-		wp->AddProperty("RAYLEIGH", PhotonEnergy, ScatteringLength, entries);
-		water->SetMaterialPropertiesTable(wp);
+		// Seawater
+		density = 1.04*g / cm3;
+		temp = 283.15*kelvin;
+		G4Material* Seawater = new G4Material("SeaWater", density, ncomponents = 4, kStateLiquid, temp);
+		G4Element* Cl = nist->FindOrBuildElement("Cl");
+		G4Element* Na = nist->FindOrBuildElement("Na");
+		G4Element* Mg = nist->FindOrBuildElement("Mg");
+		Seawater->AddMaterial(Water, 96.88 * perCent); //fractional mass
+		Seawater->AddElement(Cl, 1.92 * perCent);
+		Seawater->AddElement(Na, 1.07 * perCent);
+		Seawater->AddElement(Mg, 0.13 * perCent);
 
-		G4Orb* world = new G4Orb("World", var["WorldRadius"]*m);
-		G4LogicalVolume* world_logic = new G4LogicalVolume(world, water, "World");
-		G4VPhysicalVolume* world_phys = new G4PVPlacement(0, G4ThreeVector(), world_logic, 
-				"World", 0, false, 0, true);
 
-		for (int i=-2; i<3; i++){
-			G4String name = "d_" + to_string(i);
-			G4Orb* d = new G4Orb(name, var["DetectorRadius"]*m);
-			G4LogicalVolume* d_logic = new G4LogicalVolume(d, water, name);
-			new G4PVPlacement(0, G4ThreeVector(5*m,2*i*m,0), d_logic, name, world_logic, false, 0, true);
+		// Material properties tables
+		// Seawater Data
+
+		G4double photonEnergy[] =
+		{ 2.666*eV, 3.061*eV, 3.396*eV};
+		const G4int nEntries = sizeof(photonEnergy) / sizeof(G4double);
+
+		G4double refractiveIndex[] =
+		{ 1.333, 1.333, 1.333};
+		assert(sizeof(refractiveIndex) == sizeof(photonEnergy));
+
+		G4double absorption[] =
+		{ 55.0*m, 35.0*m, 30.5*m};
+		assert(sizeof(absorption) == sizeof(photonEnergy));
+
+		G4double mie[] =
+		{ 32.3*m, 19.0*m, 10.6*m };
+		assert(sizeof(mie) == sizeof(photonEnergy));
+
+		G4double MIE_water_const[3] = { 0.9204, 0.1491, 0.8831 };
+
+		// Mar-19 STRAW data by Matthew Man
+
+		G4MaterialPropertiesTable* MPT_Seawater = new G4MaterialPropertiesTable();
+
+		MPT_Seawater->AddProperty("RINDEX", photonEnergy, refractiveIndex, nEntries)->SetSpline(true);
+		MPT_Seawater->AddProperty("ABSLENGTH", photonEnergy, absorption, nEntries)->SetSpline(true);
+
+
+		// sea water only MieHG enabled, comment out the following four lines for pure water simulaiton
+		MPT_Seawater->AddProperty("MIEHG", photonEnergy, mie, nEntries)->SetSpline(true);
+		MPT_Seawater->AddConstProperty("MIEHG_FORWARD",MIE_water_const[0]);
+		MPT_Seawater->AddConstProperty("MIEHG_BACKWARD",MIE_water_const[1]);
+		MPT_Seawater->AddConstProperty("MIEHG_FORWARD_RATIO",MIE_water_const[2]);
+
+		Seawater->SetMaterialPropertiesTable(MPT_Seawater);
+
+		// Parameters
+	  // Detector size
+	  G4double world_radius = 100 * m;
+	  G4double det_radius = 355 * cm / 4;
+
+		// Check volumes overlaps
+		G4bool checkOverlaps = true;
+
+		G4Orb* solidWorld = new G4Orb("World", world_radius);
+		G4LogicalVolume* logicWorld = new G4LogicalVolume(solidWorld, Seawater, "WorldLV");
+		G4VPhysicalVolume* physWorld = new G4PVPlacement(0, G4ThreeVector(), logicWorld,
+		  	"World", 0, false, 0, checkOverlaps);
+
+		for (int i = 0; i < 21; i++) {
+			for (int j = 0; j < 21; j++) {
+
+				G4Orb* solidDet = new G4Orb("Det", det_radius);
+
+				G4LogicalVolume* flogicDet =
+					new G4LogicalVolume(solidDet, Seawater, "Det");
+
+				G4double phi = 2 * std::acos(-1) * j / 20;
+				G4double theta = 2 * std::acos(-1) * (i - 0.5) / 20;
+
+				G4double z = sqrt(2969) * std::cos(theta) * m;
+				G4double x = sqrt(2969) * std::sin(theta) * std::cos(phi) * m;
+				G4double y = sqrt(2969) * std::sin(theta) * std::sin(phi) * m;
+
+				new G4PVPlacement(0, G4ThreeVector(x, y, z), flogicDet, "Det", logicWorld, false, 0, checkOverlaps);
+
+			}
 		}
-		return world_phys;
+		return physWorld;
 	}
 };
 
@@ -81,7 +145,7 @@ public:
 		angle->SetMaxPhi(360.*deg);
 		G4SPSEneDistribution* energy = source->GetEneDist();
 		energy->SetEnergyDisType("Gauss");
-		energy->SetMonoEnergy(3.06*eV);    // 405 nm
+		energy->SetMonoEnergy(3.061*eV);    // 405 nm
 		energy->SetBeamSigmaInE(7.56e-2*eV);
 	}
 	virtual ~PitchforkPrimaryGeneratorAction(){
@@ -104,12 +168,12 @@ public:
 		G4TouchableHandle geometry = startpoint->GetTouchableHandle();
 		G4String volumeName = geometry->GetVolume()->GetName();
 		static bool first = true;
-		if (volumeName.substr(0,2) == "d_"){
+		if (volumeName.substr(0,2) == "Det"){
 			G4double time = startpoint->GetGlobalTime()/ns;
 			G4ThreeVector position = startpoint->GetPosition();
 			G4ThreeVector direction = startpoint->GetMomentumDirection();
 			if (first){ G4cout << "#volume\ttime[ns]\t theta[deg]\tphi[deg]" << G4endl; first = false; }
-			G4cout << volumeName << "\t" << time << "\t" << direction.theta()/deg 
+			G4cout << volumeName << "\t" << time << "\t" << direction.theta()/deg
 					<< "\t" << direction.phi()/deg << G4endl;
 			step->GetTrack()->SetTrackStatus(fStopAndKill);
 		}

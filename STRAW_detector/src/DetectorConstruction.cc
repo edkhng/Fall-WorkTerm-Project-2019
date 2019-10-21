@@ -137,7 +137,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     new G4LogicalVolume(solidbox, Seawater, "BoxLV"); //solid, material, name
 
   new G4PVPlacement(0,                       //rotation
-					box_pos,                 //position
+										box_pos,                 //position
                     logicbox,                //its logical volume
                     "Box",                   //its name
                     logicWorld,              //its mother  volume

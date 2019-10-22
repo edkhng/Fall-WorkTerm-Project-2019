@@ -48,7 +48,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // get world volume from G4LogicalVolumeStore
   G4LogicalVolume* worldLV = G4LogicalVolumeStore::GetInstance()->GetVolume("WorldLV");
-  
+
   if ( worldLV ) {
 	  worldBox = dynamic_cast<G4Box*>(worldLV->GetSolid());
   }
@@ -57,11 +57,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 	worldHalfSizeX = worldBox->GetXHalfLength();
 	worldHalfSizeY = worldBox->GetYHalfLength();
     worldHalfSizeZ = worldBox->GetZHalfLength();
-  }  
+  }
 
   // Set gun position, energy, type
-  fPrimaryGenerator->SetParticlePosition(G4ThreeVector(-0 * m, 0 * m, 0 * m));
-  //fPrimaryGenerator->SetParticlePosition(G4ThreeVector(-20 * m, -62.5 * m, -10 * m));
+  fPrimaryGenerator->SetParticlePosition(G4ThreeVector(-10 * m, -20 * m, -62.5 * m));
+  // fPrimaryGenerator->SetParticlePosition(G4ThreeVector(-20 * m, -62.5 * m, -10 * m));
   fPrimaryGenerator->SetParticleEnergy(energy);
   fPrimaryGenerator->SetParticleType(type);
   fPrimaryGenerator->GeneratePrimaryVertex(anEvent);

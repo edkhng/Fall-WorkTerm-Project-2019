@@ -3,12 +3,11 @@ Merge the tau and had data together and the e- and had data
 '''
 import numpy as np
 
-simID = 1
-energy = 1
-# size = 150
-fname1 = '{} TeV/tau_{}TeV{}_nt_Ntuple.csv'.format(energy, energy, simID)
-fname2 = '{} TeV/e_{}TeV{}_nt_Ntuple.csv'.format(energy, energy, simID)
-fname3 = '{} TeV/had_{}TeV{}_nt_Ntuple.csv'.format(energy, energy, simID)
+neutrino_energy = 50
+
+fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV372_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV412_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV534_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
 
 
 data1 = np.loadtxt(fname1, delimiter=',', comments='#')
@@ -21,7 +20,7 @@ data3 = np.loadtxt(fname3, delimiter=',', comments='#')
 data13 = np.append(data1, data3, axis=0)
 data23 = np.append(data2, data3, axis=0)
 
-np.savetxt('{} TeV/tau_had_{}.csv'.format(energy, simID), data13, delimiter=',', comments='#')
-np.savetxt('{} TeV/e_had_{}.csv'.format(energy, simID), data23, delimiter=',', comments='#')
+np.savetxt('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy), data13, delimiter=',', comments='#')
+np.savetxt('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy), data23, delimiter=',', comments='#')
 
 # np.savetxt('{}TeV_{}x{}/tau{}_nt_Ntuple_merge.csv'.format(energy, size, size, simID), data5, delimiter=',', comments='#')

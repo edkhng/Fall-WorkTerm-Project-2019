@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def get_data(fname, PMT_ID = ''):
     """Obtains the data from the csv file. If PMT_ID is specified then
@@ -36,6 +37,13 @@ def fit_function(x, pos1, pos2, wid1, wid2, amp1, amp2, r1, r2):
     return bi_gaussian1 + bi_gaussian2
 
 
+def fit_function_gaussian(x, pos1, pos2, wid1, wid2, amp1, amp2):
+    """Fit function for two merged gaussians."""
+    gaussian1 = gaussian(x, pos1, wid1, amp1)
+    gaussian2 = gaussian(x, pos2, wid2, amp2)
+    return gaussian1 + gaussian2
+
+
 def bi_gaussian(x, pos, wid, amp, r):
     """Function for bifurcated Gaussian centered at pos, where wid is the
        FWHM and r is the ratio of widths of the right side to left side."""
@@ -58,33 +66,50 @@ def gaussian(x, pos, wid, amp):
     return amp*np.exp(-4*np.log(2)*((x-pos)/(wid))**2)
 
 
-def PMT_ID_to_pos(PMT_ID, size, type=0):
+def get_peak(time, bin_size):
+    """Find the approximate location and height of the peak of the distribution."""
+    bin = int((max(time) - min(time))/bin_size)
+    n, bins, patches = plt.hist(time, bins=bin, range=(min(time), max(time)), align='mid')
+    plt.close()
+    peak_height = max(n)
+    peak_pos = float(bins[np.where(n==max(n))])
+    return peak_height, peak_pos
+
+
+# def clean_data(time):
+
+
+def get_FWHM(time, bin_size):
+    """Find the FWHM of the distribution."""
+    bin = int((max(time) - min(time))/bin_size)
+    n, bins, patches = plt.hist(time, bins=bin, range=(min(time), max(time)), align='mid')
+    plt.close()
+    peak_height = max(n)
+    half_max = int(peak_height/2)
+    select = n >= half_max
+    bins = bins[:-1]
+    bins = bins[select]
+    FWHM = max(bins) - min(bins)
+    return FWHM
+
+
+# def select_time_range(time)
+
+
+def PMT_ID_to_pos(PMT_ID):
     """Function to obtain the cartesian coordinates of the PMT given the PMT_ID,
        the size of the detector and the type (i.e., number of layers, columns and cells)."""
-    if size == 150:
-        x = 50*PMT_ID[0] - 50
-        y = 50*PMT_ID[1] - 50
-        z = 12.5*PMT_ID[2] - 68.75
-
-    elif size == 300:
-        # type 1 is configuration with 3 layers, 3 columns and 12 cells
-        if type == 1:
-            x = 100*PMT_ID[0] - 100
-            y = 100*PMT_ID[1] - 100
-            z = 25*PMT_ID[2] - 137.5
-        # type 2 is configuration with 6 layers, 6 columns and 24 cells
-        elif type ==2:
-            x = 50*PMT_ID[0] - 125
-            y = 50*PMT_ID[1] - 125
-            z = 12.5*PMT_ID[2] - 143.75
+    x = 50*PMT_ID[0] - 50
+    y = 50*PMT_ID[1] - 50
+    z = 12.5*PMT_ID[2] - 68.75
     return x, y, z
 
 
 def seperation_vector(vertex_type, PMT_pos):
     """Returns the seperation vector between the vertex and the PMT."""
-    if vertex_type == 1:
-        vertex = [-20, -10, -62.5]
-    elif vertex_type == 2:
+    if vertex_type == 'A':
+        vertex = [-10, -20, -62.5]
+    elif vertex_type == 'B':
         vertex = [-20, -62.5, -10]
     dx = vertex[0] - PMT_pos[0]
     dy = vertex[1] - PMT_pos[1]
@@ -102,9 +127,9 @@ def angle_to_vertex(vertex_type, PMT_pos):
     """Returns the angle between the vertex and the PMT."""
     dx, dy, dz = seperation_vector(vertex_type, PMT_pos)
 
-    if vertex_type == 1:
+    if vertex_type == 'A':
         angle = np.arctan((np.sqrt(dx**2 + dy**2)) / dz)
-    elif vertex_type == 2:
+    elif vertex_type == 'B':
         angle = np.arctan((np.sqrt(dx**2 + dz**2)) / dy)
 
     # convert angle to degrees

@@ -66,34 +66,51 @@ def gaussian(x, pos, wid, amp):
     return amp*np.exp(-4*np.log(2)*((x-pos)/(wid))**2)
 
 
-def get_peak(time, bin_size):
+def get_peak(n, bins):
     """Find the approximate location and height of the peak of the distribution."""
-    bin = int((max(time) - min(time))/bin_size)
-    n, bins, patches = plt.hist(time, bins=bin, range=(min(time), max(time)), align='mid')
-    plt.close()
     peak_height = max(n)
     peak_pos = float(bins[np.where(n==max(n))])
     return peak_height, peak_pos
 
 
-# def clean_data(time):
+def clean_data(time, d):
+    """Remove the tails."""
+    c = 299792458/1e9
+    tmin = d/c/1.333 - 10
+    tmax = tmin + 150
+    in_range = (time >= tmin) & (time <= tmax)
+    time = time[in_range]
+    return time
 
 
-def get_FWHM(time, bin_size):
+def get_FWHM(n, bins):
     """Find the FWHM of the distribution."""
-    bin = int((max(time) - min(time))/bin_size)
-    n, bins, patches = plt.hist(time, bins=bin, range=(min(time), max(time)), align='mid')
-    plt.close()
     peak_height = max(n)
     half_max = int(peak_height/2)
-    select = n >= half_max
+    in_range = n >= half_max
     bins = bins[:-1]
-    bins = bins[select]
+    bins = bins[in_range]
     FWHM = max(bins) - min(bins)
     return FWHM
 
 
-# def select_time_range(time)
+def select_time_range(n, bins, peak_height):
+    """Return a tmin and tmax that covers an appropriate amount of the data."""
+    third_max = int(peak_height/3)
+    in_range = n >= third_max
+    bins = bins[:-1]
+    bins = bins[in_range]
+    tmin = min(bins)
+    tmax = max(bins)
+    return tmin, tmax
+
+
+def range_size(time, tmin, tmax):
+    Ntot = len(time)
+    select = (time >= tmin) & (time < tmax)
+    time = time[select]
+    N = len(time)
+    return N/Ntot
 
 
 def PMT_ID_to_pos(PMT_ID):
@@ -117,15 +134,13 @@ def seperation_vector(vertex_type, PMT_pos):
     return dx, dy, dz
 
 
-def distance_to_vertex(vertex_type, PMT_pos):
+def distance_to_vertex(dx, dy, dz):
     """Returns the seperation distance between the vertex and the PMT."""
-    dx, dy, dz = seperation_vector(vertex_type, PMT_pos)
     return np.sqrt(dx**2 + dy**2 + dz**2)
 
 
-def angle_to_vertex(vertex_type, PMT_pos):
+def angle_to_vertex(vertex_type, dx, dy, dz):
     """Returns the angle between the vertex and the PMT."""
-    dx, dy, dz = seperation_vector(vertex_type, PMT_pos)
 
     if vertex_type == 'A':
         angle = np.arctan((np.sqrt(dx**2 + dy**2)) / dz)

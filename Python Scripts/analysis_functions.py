@@ -69,14 +69,19 @@ def gaussian(x, pos, wid, amp):
 def get_peak(n, bins):
     """Find the approximate location and height of the peak of the distribution."""
     peak_height = max(n)
-    peak_pos = float(bins[np.where(n==max(n))])
+    if len(bins[np.where(n==max(n))]) != 0:
+        peak_pos = np.mean(bins[np.where(n==max(n))])
+    else:
+        peak_pos = float(bins[np.where(n==max(n))])
     return peak_height, peak_pos
 
 
 def clean_data(time, d):
     """Remove the tails."""
     c = 299792458/1e9
-    tmin = d/c/1.333 - 10
+    tmin1 = min(time)
+    tmin2 = d/c/1.333 - 10
+    tmin = max(tmin1, tmin2)
     tmax = tmin + 150
     in_range = (time >= tmin) & (time <= tmax)
     time = time[in_range]

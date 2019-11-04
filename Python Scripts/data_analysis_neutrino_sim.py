@@ -84,7 +84,7 @@ FWHM1 = get_FWHM(n1, bins1)
 FWHM2 = get_FWHM(n2, bins2)
 FWHM3 = get_FWHM(n3, bins3)
 FWHM4 = get_FWHM(n4, bins4)
-FWHM4 = get_FWHM(n5, bins5)
+FWHM5 = get_FWHM(n5, bins5)
 
 tmin1, tmax1 = select_time_range(n1, bins1, peak_height1)
 tmin2, tmax2 = select_time_range(n2, bins2, peak_height2)
@@ -116,15 +116,17 @@ plt.close()
 
 guesses1 = [peak_pos1, peak_pos2, FWHM1, FWHM2, peak_height1, peak_height2]
 guesses2 = [peak_pos3, peak_pos2, FWHM3, FWHM2, peak_height3, peak_height2]
-guesses3 = [peak_pos4, FWHM4, peak_height4]
-guesses4 = [peak_pos5, FWHM5, peak_height5]
+guesses3 = [peak_pos1, peak_pos2, FWHM1, FWHM2, peak_height1, peak_height2, 0.3, 0.3]
+guesses4 = [peak_pos3, peak_pos2, FWHM3, FWHM2, peak_height3, peak_height2, 0.3, 0.3]
+# guesses3 = [peak_pos4, FWHM4, peak_height4]
+# guesses4 = [peak_pos5, FWHM5, peak_height5]
 
 # fitparams1, fitcov1 = curve_fit(gaussian, bins[:-1], n, p0=guesses1)
 # fitparams2, fitcov2 = curve_fit(bi_gaussian, bins[:-1], n, p0=guesses2)
 fitparams1, fitcov1 = curve_fit(fit_function_gaussian, bins4[:-1], n4, p0=guesses1, maxfev=100000)
 fitparams2, fitcov2 = curve_fit(fit_function_gaussian, bins5[:-1], n5, p0=guesses2, maxfev=100000)
-fitparams3, fitcov3 = curve_fit(gaussian, bins4[:-1], n4, p0=guesses3, maxfev=100000)
-fitparams4, fitcov4 = curve_fit(gaussian, bins5[:-1], n5, p0=guesses4, maxfev=100000)
+fitparams3, fitcov3 = curve_fit(fit_function, bins4[:-1], n4, p0=guesses3, maxfev=100000)
+fitparams4, fitcov4 = curve_fit(fit_function, bins5[:-1], n5, p0=guesses4, maxfev=100000)
 
 dof1 = bin4 - len(guesses1)
 dof2 = bin5 - len(guesses2)
@@ -133,9 +135,9 @@ dof4 = bin5 - len(guesses4)
 
 # chisq1, p1 = chisquare(n, gaussian(bins[:-1], *fitparams1), ddof=dof1)
 # chisq2, p2 = chisquare(n, bi_gaussian(bins[:-1], *fitparams2), ddof=dof2)
-chisq1, p1 = chisquare(n4, fit_function_gaussian(bins4[:-1], *fitparams1), ddof=dof3)
-chisq2, p2 = chisquare(n4, fit_function(bins4[:-1], *fitparams2), ddof=dof4)
-chisq3, p3 = chisquare(n5, fit_function_gaussian(bins5[:-1], *fitparams3), ddof=dof3)
+chisq1, p1 = chisquare(n4, fit_function_gaussian(bins4[:-1], *fitparams1), ddof=dof1)
+chisq3, p3 = chisquare(n5, fit_function_gaussian(bins5[:-1], *fitparams2), ddof=dof2)
+chisq2, p2 = chisquare(n4, fit_function(bins4[:-1], *fitparams3), ddof=dof3)
 chisq4, p4 = chisquare(n5, fit_function(bins5[:-1], *fitparams4), ddof=dof4)
 
 chisqdof1 = chisq1/dof3
@@ -182,7 +184,7 @@ plt.subplot(324)
 plt.hist(time3, bins=bin3, range=(tmin3, tmax3), histtype='step', color='C0', label='{} TeV e-'.format(neutrino_energy))
 plt.hist(time2, bins=bin2, range=(tmin2, tmax2), histtype='step', color='C1', label='{} TeV had'.format(neutrino_energy))
 plt.hist(time5, bins=bin5, range=(tmin5, tmax5), histtype='step', color='C2', label='Sum')
-plt.plot(bins5, fit_function_gaussian(bins5, *fitparams3), color='C3', label='Double Gaussian Fit')
+plt.plot(bins5, fit_function_gaussian(bins5, *fitparams2), color='C3', label='Double Gaussian Fit')
 plt.xlim(tmin5, tmax5)
 plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}'.format(chisq3, chisqdof3, bin5), fontsize=10)
 plt.legend(fontsize=10)
@@ -191,7 +193,7 @@ plt.subplot(325)
 plt.hist(time1, bins=bins[0], range=(min(time1), max(time1)), histtype='step', color='C0', label='{} TeV tau'.format(neutrino_energy))
 plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='{} TeV had'.format(neutrino_energy))
 plt.hist(time4, bins=bins[3], range=(min(time4), max(time4)), histtype='step', color='C2', label='Sum')
-plt.plot(bins4, fit_function(bins4, *fitparams2), color='C3', label='Double Bi_gaussian Fit')
+plt.plot(bins4, fit_function(bins4, *fitparams3), color='C3', label='Double Bi_gaussian Fit')
 plt.xlim(tmin4, tmax4)
 plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}'.format(chisq2, chisqdof2, bin4), fontsize=10)
 plt.legend(fontsize=10)

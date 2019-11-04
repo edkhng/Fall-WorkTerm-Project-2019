@@ -79,8 +79,8 @@ def get_peak(n, bins):
 def clean_data(time, d):
     """Remove the tails."""
     c = 299792458/1e9
-    tmin1 = min(time)
-    tmin2 = d/c/1.333 - 10
+    tmin1 = min(time) - 5
+    tmin2 = d/c/1.333 - 15
     tmin = max(tmin1, tmin2)
     tmax = tmin + 150
     in_range = (time >= tmin) & (time <= tmax)

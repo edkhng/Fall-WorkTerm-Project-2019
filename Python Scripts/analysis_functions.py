@@ -69,7 +69,7 @@ def gaussian(x, pos, wid, amp):
 def get_peak(n, bins):
     """Find the approximate location and height of the peak of the distribution."""
     peak_height = max(n)
-    if len(bins[np.where(n==max(n))]) != 0:
+    if len(bins[np.where(n==max(n))]) != 1:
         peak_pos = np.mean(bins[np.where(n==max(n))])
     else:
         peak_pos = float(bins[np.where(n==max(n))])
@@ -79,12 +79,37 @@ def get_peak(n, bins):
 def clean_data(time, d):
     """Remove the tails."""
     c = 299792458/1e9
-    tmin1 = min(time) - 5
-    tmin2 = d/c/1.333 - 15
-    tmin = max(tmin1, tmin2)
+    tmin = min(time)
+    #tmin2 = d/c/1.333
+    #tmin = max(tmin1, tmin2)
     tmax = tmin + 150
     in_range = (time >= tmin) & (time <= tmax)
     time = time[in_range]
+
+    if len(time) < 200:
+        bin_size = 20
+    elif len(time) < 400:
+        bin_size = 10
+    elif len(time) < 700:
+        bin_size = 4
+    elif len(time) < 1400:
+        bin_size = 2
+    else:
+        bin_size = 1
+
+    bin = int((max(time) - min(time)) / bin_size)
+
+    n, bins = np.histogram(time, bins=bin, range=(tmin, tmax))
+    peak_height = get_peak(n, bins)[0]
+    cutoff = max(int(peak_height/50), 3)
+    in_range = n >= cutoff
+    bins = bins[:-1]
+    bins = bins[in_range]
+    tmax = max(bins)
+
+    in_range = (time <= tmax)
+    time = time[in_range]
+
     return time
 
 

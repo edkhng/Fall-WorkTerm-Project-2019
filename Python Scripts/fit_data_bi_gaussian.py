@@ -13,7 +13,9 @@ fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV371_nt_Ntup
 fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 
-PMT_ID = [1, 1, 1]
+a, b = 0, 1
+
+PMT_ID = [a, b, 3]
 layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(fname1, PMT_ID)
 layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(fname2, PMT_ID)
 layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(fname3, PMT_ID)
@@ -80,11 +82,11 @@ N3 = range_size(time3, tmin3, tmax3)
 N4 = range_size(time4, tmin4, tmax4)
 N5 = range_size(time5, tmin5, tmax5)
 
-bin1 = int(tmax1-tmin1)
-bin2 = int(tmax2-tmin2)
-bin3 = int(tmax3-tmin3)
-bin4 = int(tmax4-tmin4)
-bin5 = int(tmax5-tmin5)
+bin1 = int((tmax1-tmin1)/bin_size)
+bin2 = int((tmax2-tmin2)/bin_size)
+bin3 = int((tmax3-tmin3)/bin_size)
+bin4 = int((tmax4-tmin4)/bin_size)
+bin5 = int((tmax5-tmin5)/bin_size)
 
 # print("\nThe number of bins: [{}, {}, {}, {}, {}]".format(bin1, bin2, bin3, bin4, bin5))
 
@@ -183,6 +185,7 @@ plt.xlim(tmin5, tmax5)
 plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq4, chisqdof4, bin5, len(guesses4)), fontsize=11)
 plt.legend(fontsize=10)
 
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/string11/{}_TeV_PMT_ID_{}{}{}_bi_gaussian_fits.png'.format(neutrino_energy, neutrino_energy, *PMT_ID))
-plt.subplots_adjust(top=0.90, bottom=0.06, left=0.08, right=0.93, hspace=0.3, wspace=0.15)
-plt.show()
+plt.subplots_adjust(top=0.90, bottom=0.06, left=0.08, right=0.93, hspace=0.35, wspace=0.15)
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_string{}{}/{}_TeV_PMT_ID_{}{}{}_bi_gaussian_fits.png'.format(neutrino_energy, neutrino_energy, a, b, neutrino_energy,*PMT_ID))
+
+#plt.show()

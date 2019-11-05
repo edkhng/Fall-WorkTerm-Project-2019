@@ -71,7 +71,9 @@ for i in range(12):
     f.write("Total number of hits tau neutrino {} TeV: {}\n".format(2*neutrino_energy, len(time4)))
     f.write("Total number of hits electron neutrino {} TeV: {}\n".format(2*neutrino_energy, len(time5)))
 
-    if len(time1) < 200:
+    if len(time1) < 50:
+        continue
+    elif len(time1) < 200:
         bin_size = 20
     elif len(time1) < 400:
         bin_size = 10
@@ -107,6 +109,7 @@ for i in range(12):
     n3, bins3, patches3 = ax2[l][i % 4].hist(time3, bins=bins[2], range=(min(time3), max(time3)), histtype='step', color='C0', label='e-')
     n2, bins2, patches2 = ax2[l][i % 4].hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
     n5, bins5, patches5 = ax2[l][i % 4].hist(time5, bins=bins[4], range=(min(time5), max(time5)), histtype='step', color='C2', label='Sum')
+
     ax2[l][i % 4].set_xlim(min(time5), max(time5))
     ax2[l][i % 4].legend(fontsize=11)
     ax2[l][i % 4].set_title('PMT_ID=[{},{},{}], distance={:.2f} m\nangle={:.2f} degrees, bin_size={} ns'

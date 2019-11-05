@@ -3,11 +3,11 @@ Merge the tau and had data together and the e- and had data
 '''
 import numpy as np
 
-neutrino_energy = 50
+neutrino_energy = 10
 
-fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV372_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV412_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV534_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV423_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV234_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV163_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
 
 
 data1 = np.loadtxt(fname1, delimiter=',', comments='#')

@@ -13,7 +13,7 @@ fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV411_nt_Nt
 fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 # fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 
-PMT_ID = [1, 1, 3]
+PMT_ID = [1, 1, 2]
 layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(fname1, PMT_ID)
 layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(fname2, PMT_ID)
 # layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(fname3, PMT_ID)
@@ -35,7 +35,7 @@ bin_size = 1
 
 bins = []
 time = [time1, time2, time4]
-time = [time2, time3, time5]
+# time = [time3, time2, time5]
 for j in range(3):
     bin = int((max(time[j]) - min(time[j])) / bin_size)
     bins.append(bin)
@@ -43,9 +43,9 @@ for j in range(3):
 
 n1, bins1 = np.histogram(time1, bins=bins[0], range=(min(time1), max(time1)))
 n2, bins2 = np.histogram(time2, bins=bins[1], range=(min(time2), max(time2)))
-# n3, bins3 = np.histogram(time3, bins=bins[2], range=(min(time3), max(time3)))
-n4, bins4 = np.histogram(time4, bins=bins[3], range=(min(time4), max(time4)))
-# n5, bins5 = np.histogram(time5, bins=bins[4], range=(min(time5), max(time5)))
+# n3, bins3 = np.histogram(time3, bins=bins[0], range=(min(time3), max(time3)))
+n4, bins4 = np.histogram(time4, bins=bins[2], range=(min(time4), max(time4)))
+# n5, bins5 = np.histogram(time5, bins=bins[2], range=(min(time5), max(time5)))
 
 peak_height1, peak_pos1 = get_peak(n1, bins1)
 peak_height2, peak_pos2 = get_peak(n2, bins2)
@@ -107,9 +107,14 @@ fitparams4, fitcov4 = curve_fit(bi_gaussian, bins4[:-1], n4, p0=guesses4, maxfev
 # fitparams4, fitcov4 = curve_fit(bi_gaussian, bins5[:-1], n5, p0=guesses4, maxfev=100000)
 
 dof1 = bin4 - len(guesses1)
-dof2 = bin5 - len(guesses2)
+dof2 = bin4 - len(guesses2)
 dof3 = bin4 - len(guesses3)
-dof4 = bin5 - len(guesses4)
+dof4 = bin4 - len(guesses4)
+
+# dof1 = bin5 - len(guesses1)
+# dof2 = bin5 - len(guesses2)
+# dof3 = bin5 - len(guesses3)
+# dof4 = bin5 - len(guesses4)
 
 chisq1, p1 = chisquare(n4, fit_function_gaussian(bins4[:-1], *fitparams1), ddof=dof1)
 chisq3, p3 = chisquare(n4, gaussian(bins4[:-1], *fitparams2), ddof=dof2)
@@ -137,6 +142,7 @@ plt.hist(time1, bins=bins[0], range=(min(time1), max(time1)), histtype='step', c
 plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
 plt.hist(time4, bins=bins[2], range=(min(time4), max(time4)), histtype='step', color='C2', label='Sum')
 plt.plot(bins4, fit_function_gaussian(bins4, *fitparams1), color='C3', label='Double Gaussian Fit')
+# plt.plot(np.linspace(tmin4, tmax4, 1000), fit_function_gaussian(np.linspace(tmin4, tmax4, 1000), *fitparams1), color='C3', label='Double Gaussian Fit')
 # plt.plot(bins4, gaussian(bins4, *fitparams2), color='C3', label='Single Gaussian Fit')
 # plt.plot(bins4, fit_function(bins4, *fitparams3), color='C3', label='Double Bi_gaussian Fit')
 # plt.plot(bins4, bi_gaussian(bins4, *fitparams4), color='C3', label='Single Bi_gaussian Fit')
@@ -147,13 +153,13 @@ plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(ch
 # plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq4, chisqdof4, bin4, len(guesses4)), fontsize=12)
 plt.legend(fontsize=12)
 
-# plt.hist(time3, bins=bins[1], range=(min(time3), max(time3)), histtype='step', color='C0', label='e-')
-# plt.hist(time2, bins=bins[0], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
+# plt.hist(time3, bins=bins[0], range=(min(time3), max(time3)), histtype='step', color='C0', label='e-')
+# plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
 # plt.hist(time5, bins=bins[2], range=(min(time5), max(time5)), histtype='step', color='C2', label='Sum')
-# plt.plot(bins5, fit_function_gaussian(bins4, *fitparams1), color='C3', label='Double Gaussian Fit')
-# # plt.plot(bins5, gaussian(bins4, *fitparams2), color='C3', label='Single Gaussian Fit')
-# # plt.plot(bins5, fit_function(bins4, *fitparams3), color='C3', label='Double Bi_gaussian Fit')
-# # plt.plot(bins5, bi_gaussian(bins4, *fitparams4), color='C3', label='Single Bi_gaussian Fit')
+# plt.plot(bins5, fit_function_gaussian(bins5, *fitparams1), color='C3', label='Double Gaussian Fit')
+# # plt.plot(bins5, gaussian(bins5, *fitparams2), color='C3', label='Single Gaussian Fit')
+# # plt.plot(bins5, fit_function(bins5, *fitparams3), color='C3', label='Double Bi_gaussian Fit')
+# # plt.plot(bins5, bi_gaussian(bins5, *fitparams4), color='C3', label='Single Bi_gaussian Fit')
 # plt.xlim(tmin5, tmax5)
 # plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq1, chisqdof1, bin5, len(guesses1)), fontsize=12)
 # # plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq2, chisqdof2, bin5, len(guesses2)), fontsize=12)

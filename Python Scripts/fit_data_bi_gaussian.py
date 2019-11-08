@@ -13,9 +13,9 @@ fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV371_nt_Ntup
 fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 
-a, b = 0, 1
+a, b = 1, 1
 
-PMT_ID = [a, b, 3]
+PMT_ID = [a, b, 1]
 layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(fname1, PMT_ID)
 layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(fname2, PMT_ID)
 layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(fname3, PMT_ID)
@@ -27,79 +27,57 @@ dx, dy, dz = seperation_vector('A', PMT_pos)
 d = distance_to_vertex(dx, dy, dz)
 theta = angle_to_vertex('A', dx, dy, dz)
 
-time1 = clean_data(time1, d)
-time2 = clean_data(time2, d)
-time3 = clean_data(time3, d)
-time4 = clean_data(time4, d)
-time5 = clean_data(time5, d)
+N = min(len(time1), len(time2), len(time3))
+time_range = get_range(time4)
+bin_size = get_bin_size(time_range, N)
 
-if len(time1) < 200:
-    bin_size = 20
-elif len(time1) < 400:
-    bin_size = 10
-elif len(time1) < 700:
-    bin_size = 4
-elif len(time1) < 1400:
-    bin_size = 2
-else:
-    bin_size = 1
+bins_a = int((max(time4) - min(time4))/bin_size)
+bins_b = int((max(time5) - min(time5))/bin_size)
 
-bins = []
-time = [time1, time2, time3, time4, time5]
-for j in range(5):
-    bin = int((max(time[j]) - min(time[j])) / bin_size)
-    bins.append(bin)
+range_a = (min(time4), max(time4))
+range_b = (min(time5), max(time5))
 
-
-n1, bins1, patches1 = plt.hist(time1, bins=bins[0], range=(min(time1), max(time1)))
-n2, bins2, patches2 = plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)))
-n3, bins3, patches3 = plt.hist(time3, bins=bins[2], range=(min(time3), max(time3)))
-n4, bins4, patches4 = plt.hist(time4, bins=bins[3], range=(min(time4), max(time4)))
-n5, bins5, patches5 = plt.hist(time5, bins=bins[4], range=(min(time5), max(time5)))
-plt.close()
+n1, bins1 = np.histogram(time1, bins=bins_a, range=range_a)
+n2a, bins2b = np.histogram(time2, bins=bins_a, range=range_a)
+n2b, bins2a = np.histogram(time2, bins=bins_b, range=range_b)
+n3, bins3 = np.histogram(time3, bins=bins_b, range=range_b)
+n4, bins4 = np.histogram(time4, bins=bins_a, range=range_a)
+n5, bins5 = np.histogram(time5, bins=bins_b, range=range_b)
 
 peak_height1, peak_pos1 = get_peak(n1, bins1)
-peak_height2, peak_pos2 = get_peak(n2, bins2)
+peak_height2a, peak_pos2a = get_peak(n2a, bins2a)
+peak_height2b, peak_pos2b = get_peak(n2b, bins2b)
 peak_height3, peak_pos3 = get_peak(n3, bins3)
 peak_height4, peak_pos4 = get_peak(n4, bins4)
 peak_height5, peak_pos5 = get_peak(n5, bins5)
 
 FWHM1 = get_FWHM(n1, bins1)
-FWHM2 = get_FWHM(n2, bins2)
+FWHM2a = get_FWHM(n2a, bins2a)
+FWHM2b = get_FWHM(n2b, bins2b)
 FWHM3 = get_FWHM(n3, bins3)
 FWHM4 = get_FWHM(n4, bins4)
 FWHM5 = get_FWHM(n5, bins5)
 
-tmin1, tmax1 = select_time_range(n1, bins1, peak_height1)
-tmin2, tmax2 = select_time_range(n2, bins2, peak_height2)
-tmin3, tmax3 = select_time_range(n3, bins3, peak_height3)
-tmin4, tmax4 = select_time_range(n4, bins4, peak_height4)
-tmin5, tmax5 = select_time_range(n5, bins5, peak_height5)
+tmin4, tmax4 = get_range_fit(n4, bins4, peak_height4)
+tmin5, tmax5 = get_range_fit(n5, bins5, peak_height5)
 
-N1 = range_size(time1, tmin1, tmax1)
-N2 = range_size(time2, tmin2, tmax2)
-N3 = range_size(time3, tmin3, tmax3)
 N4 = range_size(time4, tmin4, tmax4)
 N5 = range_size(time5, tmin5, tmax5)
 
-bin1 = int((tmax1-tmin1)/bin_size)
-bin2 = int((tmax2-tmin2)/bin_size)
-bin3 = int((tmax3-tmin3)/bin_size)
 bin4 = int((tmax4-tmin4)/bin_size)
 bin5 = int((tmax5-tmin5)/bin_size)
 
 # print("\nThe number of bins: [{}, {}, {}, {}, {}]".format(bin1, bin2, bin3, bin4, bin5))
 
+n1, bins1 = np.histogram(time1, bins=bin4, range=(tmin4, tmax4))
+n2a, bins2a = np.histogram(time2, bins=bin4, range=(tmin4, tmax4))
+n2b, bins2b = np.histogram(time2, bins=bin5, range=(tmin5, tmax5))
+n3, bins3 = np.histogram(time3, bins=bin5, range=(tmin5, tmax5))
+n4, bins4 = np.histogram(time4, bins=bin4, range=(tmin4, tmax4))
+n5, bins5 = np.histogram(time5, bins=bin5, range=(tmin5, tmax5))
 
-n1, bins1, patches1 = plt.hist(time1, bins=bin1, range=(tmin1, tmax1))
-n2, bins2, patches2 = plt.hist(time2, bins=bin2, range=(tmin2, tmax2))
-n3, bins3, patches3 = plt.hist(time3, bins=bin3, range=(tmin3, tmax3))
-n4, bins4, patches4 = plt.hist(time4, bins=bin4, range=(tmin4, tmax4))
-n5, bins5, patches5 = plt.hist(time5, bins=bin5, range=(tmin5, tmax5))
-plt.close()
-
-guesses1 = [peak_pos1, peak_pos2, FWHM1, FWHM2, peak_height1, peak_height2, 0.3, 0.3]
-guesses2 = [peak_pos3, peak_pos2, FWHM3, FWHM2, peak_height3, peak_height2, 0.3, 0.3]
+guesses1 = [peak_pos1, peak_pos2a, FWHM1, FWHM2a, peak_height1, peak_height2a, 0.3, 0.3]
+guesses2 = [peak_pos3, peak_pos2b, FWHM3, FWHM2b, peak_height3, peak_height2b, 0.3, 0.3]
 guesses3 = [peak_pos4, FWHM4, peak_height4, 0.3]
 guesses4 = [peak_pos5, FWHM5, peak_height5, 0.3]
 
@@ -123,53 +101,58 @@ chisqdof2 = chisq2/dof4
 chisqdof3 = chisq3/dof3
 chisqdof4 = chisq4/dof4
 
-# print(fitparams)
-# print(p)
+pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b = fitparams1
+pos2a, pos2b, wid2a, wid2b, amp2a, amp2b, r2a, r2b = fitparams2
 
-
+f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params.txt'.format(neutrino_energy), 'a+')
+f.write("#####################################################################\n")
+f.write("\nBi_gaussian Fits; PMT_ID: [{}, {}, {}]\n".format(*PMT_ID))
+f.write("\n{} TeV Tau Neutrino\n".format(2*neutrino_energy))
+f.write("Bi_gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\nr1 = {:.2f}\n".format(pos1a, wid1a, amp1a, r1a))
+f.write("Bi_gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\nr2 = {:.2f}\n".format(pos1b, wid1b, amp1b, r1b))
+f.write("\n{} TeV Electron Neutrino\n".format(2*neutrino_energy))
+f.write("Bi_gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\nr1 = {:.2f}\n".format(pos2a, wid2a, amp2a, r2a))
+f.write("Bi_gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\nr2 = {:.2f}\n".format(pos2b, wid2b, amp2b, r2b))
+f.close()
 
 plt.figure(figsize=(12,10))
 plt.suptitle('{} TeV Time Residuals with Bi_gaussian Fits;\nPMT_ID = [{}, {}, {}],distance = {:.4f} m, angle={:.4f} degrees'.format(neutrino_energy, *PMT_ID, d, theta), fontsize=14)
-# plt.hist(time, bins=bin1, range=(tmin1,tmax1), histtype='step', color='C1', label='{} TeV tau'.format(neutrino_energy))
-# plt.hist(time2, bins=bin2, range=(tmin2,tmax2), histtype='step', color='C0', label='{} TeV had'.format(neutrino_energy))
-# plt.hist(time, bins=bin3, range=(tmin3,tmax3), histtype='step', color='C1', label='{} TeV e-'.format(neutrino_energy))
-# plt.hist(time1, bins=bin4, range=(tmin4,tmax4), histtype='step', color='C2', label='Sum')
 
 plt.subplot(321)
-plt.hist(time1, bins=bins[0], range=(min(time1), max(time1)), histtype='step', color='C0', label='tau')
-plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
-plt.hist(time4, bins=bins[3], range=(min(time4), max(time4)), histtype='step', color='C2', label='Sum')
-plt.xlim(min(time4), max(time4))
+plt.hist(time1, bins=bins_a, range=range_a, histtype='step', color='C0', label='tau')
+plt.hist(time2, bins=bins_a, range=range_a, histtype='step', color='C1', label='had')
+plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
+tmin_a, tmax_a = get_range_plot(n4, bins4)
+plt.xlim(tmin_a, tmax_a)
 plt.legend(fontsize=10)
 
 plt.subplot(322)
-plt.hist(time3, bins=bins[2], range=(min(time3), max(time3)), histtype='step', color='C0', label='e-')
-plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
-plt.hist(time5, bins=bins[4], range=(min(time5), max(time5)), histtype='step', color='C2', label='Sum')
-plt.xlim(min(time5), max(time5))
+plt.hist(time3, bins=bins_b, range=range_b, histtype='step', color='C0', label='tau')
+plt.hist(time2, bins=bins_b, range=range_b, histtype='step', color='C1', label='had')
+plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
+tmin_b, tmax_b = get_range_plot(n5, bins5)
+plt.xlim(tmin_b, tmax_b)
 plt.legend(fontsize=10)
 
 plt.subplot(323)
-plt.hist(time1, bins=bins[0], range=(min(time1), max(time1)), histtype='step', color='C0', label='tau')
-plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
-plt.hist(time4, bins=bins[3], range=(min(time4), max(time4)), histtype='step', color='C2', label='Sum')
+plt.plot(bins4, bi_gaussian(bins4, pos1a, wid1a, amp1a, r1a), label='Bi_gaussian 1'))
+plt.plot(bins4, bi_gaussian(bins4, pos1b, wid1b, amp1b, r1b), label='Bi_gaussian 2'))
+plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
 plt.plot(bins4, fit_function(bins4, *fitparams1), color='C3', label='Double Bi_gaussian Fit')
 plt.xlim(tmin4, tmax4)
 plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq1, chisqdof1, bin4, len(guesses1)), fontsize=11)
 plt.legend(fontsize=10)
 
 plt.subplot(324)
-plt.hist(time3, bins=bins[2], range=(min(time3), max(time3)), histtype='step', color='C0', label='e-')
-plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
-plt.hist(time5, bins=bins[4], range=(min(time5), max(time5)), histtype='step', color='C2', label='Sum')
+plt.plot(bins5, bi_gaussian(bins5, pos2a, wid2a, amp2a, r2a), label='Bi_gaussian 1'))
+plt.plot(bins5, bi_gaussian(bins5, pos2b, wid2b, amp2b, r2b), label='Bi_gaussian 2'))
+plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
 plt.plot(bins5, fit_function(bins5, *fitparams2), color='C3', label='Double Bi_gaussian Fit')
 plt.xlim(tmin5, tmax5)
 plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq3, chisqdof3, bin5, len(guesses2)), fontsize=11)
 plt.legend(fontsize=10)
 
 plt.subplot(325)
-plt.hist(time1, bins=bins[0], range=(min(time1), max(time1)), histtype='step', color='C0', label='tau')
-plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
 plt.hist(time4, bins=bins[3], range=(min(time4), max(time4)), histtype='step', color='C2', label='Sum')
 plt.plot(bins4, bi_gaussian(bins4, *fitparams3), color='C3', label='Single Bi_gaussian Fit')
 plt.xlim(tmin4, tmax4)
@@ -177,8 +160,6 @@ plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(ch
 plt.legend(fontsize=10)
 
 plt.subplot(326)
-plt.hist(time3, bins=bins[2], range=(min(time3), max(time3)), histtype='step', color='C0', label='e-')
-plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')
 plt.hist(time5, bins=bins[4], range=(min(time5), max(time5)), histtype='step', color='C2', label='Sum')
 plt.plot(bins5, bi_gaussian(bins5, *fitparams4), color='C3', label='Single Bi_gaussian Fit')
 plt.xlim(tmin5, tmax5)
@@ -187,5 +168,4 @@ plt.legend(fontsize=10)
 
 plt.subplots_adjust(top=0.90, bottom=0.06, left=0.08, right=0.93, hspace=0.35, wspace=0.15)
 plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_string{}{}/{}_TeV_PMT_ID_{}{}{}_bi_gaussian_fits.png'.format(neutrino_energy, neutrino_energy, a, b, neutrino_energy,*PMT_ID))
-
-#plt.show()
+plt.show()

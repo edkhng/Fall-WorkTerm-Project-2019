@@ -63,54 +63,39 @@ def bi_gaussian(x, pos, wid, amp, r):
 def gaussian(x, pos, wid, amp):
     """Function for Gaussian centered at pos, where wid is the FWHM
        and amp is the amplitude."""
-    return amp*np.exp(-4*np.log(2)*((x-pos)/(wid))**2)
+    return abs(amp)*np.exp(-4*np.log(2)*((x-pos)/(wid))**2)
 
 
 def get_peak(n, bins):
     """Find the approximate location and height of the peak of the distribution."""
     peak_height = max(n)
-    if len(bins[np.where(n==max(n))]) != 1:
+    if len(bins[np.where(n==max(n))]) != 0:
         peak_pos = np.mean(bins[np.where(n==max(n))])
     else:
         peak_pos = float(bins[np.where(n==max(n))])
     return peak_height, peak_pos
 
 
-def clean_data(time, d):
-    """Remove the tails."""
-    c = 299792458/1e9
-    tmin = min(time)
-    #tmin2 = d/c/1.333
-    #tmin = max(tmin1, tmin2)
-    tmax = tmin + 150
-    in_range = (time >= tmin) & (time <= tmax)
-    time = time[in_range]
+def get_range(time):
+    """Get time range of first 85% of data"""
+    time.sort()
+    N = len(time)
+    time = time[0:-int(N*0.2)]
+    time_range = max(time) - min(time)
+    return time_range
 
-    if len(time) < 200:
-        bin_size = 20
-    elif len(time) < 400:
-        bin_size = 10
-    elif len(time) < 700:
-        bin_size = 4
-    elif len(time) < 1400:
-        bin_size = 2
-    else:
-        bin_size = 1
 
-    bin = int((max(time) - min(time)) / bin_size)
-
-    n, bins = np.histogram(time, bins=bin, range=(tmin, tmax))
+def get_range_plot(n, bins):
+# def get_range_plot(time):
+    """Return a tmin and tmax that covers an appropriate amount of the data for plotting."""
     peak_height = get_peak(n, bins)[0]
-    cutoff = max(int(peak_height/50), 3)
+    cutoff = max(int(peak_height/10), 4)
     in_range = n >= cutoff
-    bins = bins[:-1]
+    tmin = bins[0]
+    bins = bins[1:]
     bins = bins[in_range]
-    tmax = max(bins)
-
-    in_range = (time <= tmax)
-    time = time[in_range]
-
-    return time
+    tmax = bins[-1]
+    return tmin, tmax
 
 
 def get_FWHM(n, bins):
@@ -124,8 +109,8 @@ def get_FWHM(n, bins):
     return FWHM
 
 
-def select_time_range(n, bins, peak_height):
-    """Return a tmin and tmax that covers an appropriate amount of the data."""
+def get_range_fit(n, bins, peak_height):
+    """Return a tmin and tmax that covers an appropriate amount of the data for fitting."""
     third_max = int(peak_height/3)
     in_range = n >= third_max
     bins = bins[:-1]
@@ -133,6 +118,38 @@ def select_time_range(n, bins, peak_height):
     tmin = min(bins)
     tmax = max(bins)
     return tmin, tmax
+
+def get_bin_size(time_range, N):
+
+    if N/time_range < 1:
+        if time_range < 56:
+            bin_size = 4
+        else:
+            bin_size = 8
+    elif N/time_range < 3:
+        if time_range < 40:
+            bin_size = 2
+        else:
+            bin_size = 4
+    elif N/time_range < 6:
+        if time_range < 80:
+            bin_size = 2
+        else:
+            bin_size = 4
+    elif N/time_range < 10:
+        if time_range < 60:
+            bin_size = 1
+        else:
+            bin_size = 2
+    elif N/time_range < 20:
+        if time_range < 80:
+            bin_size = 1
+        else:
+            bin_size = 2
+    else:
+        bin_size = 1
+
+    return bin_size
 
 
 def range_size(time, tmin, tmax):

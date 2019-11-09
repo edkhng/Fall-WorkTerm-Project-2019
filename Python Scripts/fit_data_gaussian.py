@@ -5,18 +5,18 @@ from scipy.optimize import curve_fit
 from scipy.stats import chisquare
 import timeit
 
-neutrino_energy = 50
+neutrino_energy = 100
 
-fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV372_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV412_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV534_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV377_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV411_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV371_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
 
 fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
 
 start = timeit.default_timer()
 
-a, b = 0, 0
+a, b = 0, 1
 
 PMT_ID = [a, b, 2]
 layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(fname1, PMT_ID)
@@ -92,6 +92,9 @@ fitparams2, fitcov2 = curve_fit(fit_function_gaussian, bins5[:-1], n5, p0=guesse
 fitparams3, fitcov3 = curve_fit(gaussian, bins4[:-1], n4, p0=guesses3, maxfev=100000)
 fitparams4, fitcov4 = curve_fit(gaussian, bins5[:-1], n5, p0=guesses4, maxfev=100000)
 
+# fitparams1_error = np.sqrt(np.diag(fitcov1))
+# fitparams2_error = np.sqrt(np.diag(fitcov2))
+
 dof1 = bin4 - len(guesses1)
 dof2 = bin5 - len(guesses2)
 dof3 = bin4 - len(guesses3)
@@ -110,70 +113,83 @@ chisqdof4 = chisq4/dof4
 pos1a, pos1b, wid1a, wid1b, amp1a, amp1b = fitparams1
 pos2a, pos2b, wid2a, wid2b, amp2a, amp2b = fitparams2
 
-f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params.txt'.format(neutrino_energy), 'a+')
-f.write("#####################################################################\n")
-f.write("\nGaussian Fits; PMT_ID: [{}, {}, {}]\n".format(*PMT_ID))
-f.write("\n{} TeV Tau Neutrino\n".format(2*neutrino_energy))
-f.write("Gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\n".format(pos1a, wid1a, amp1a))
-f.write("Gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\n".format(pos1b, wid1b, amp1b))
-f.write("\n{} TeV Electron Neutrino\n".format(2*neutrino_energy))
-f.write("Gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\n".format(pos2a, wid2a, amp2a))
-f.write("Gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\n".format(pos2b, wid2b, amp2b))
-f.close()
+f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_gaussian_tau_all.csv'.format(neutrino_energy), 'a+')
+# f.write('# pos1, pos2, wid1, wid2, amp1, amp2\n')
+f.write('{}, {}, {}, {}, {}, {}\n'.format(*fitparams1))
+# f.write('# pos1, pos2, wid1, wid2, amp1, amp2, upos1, upos2, uwid1, uwid2, uamp1, uamp2')
+# f.write('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.format(*fitparams1, *fitparams1_error))
 
-plt.figure(figsize=(12,10))
-plt.suptitle('{} TeV Time Residuals with Gaussian Fits;\nPMT_ID = [{}, {}, {}], distance = {:.4f} m, angle={:.4f} degrees'.format(neutrino_energy, *PMT_ID, d, theta), fontsize=14)
+f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_gaussian_e_all.csv'.format(neutrino_energy), 'a+')
+# f.write('# pos1, pos2, wid1, wid2, amp1, amp2\n')
+f.write('{}, {}, {}, {}, {}, {}\n'.format(*fitparams2))
+# f.write('# pos1, pos2, wid1, wid2, amp1, amp2, upos1, upos2, uwid1, uwid2, uamp1, uamp2')
+# f.write('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.format(*fitparams2, *fitparams2_error))
 
-plt.subplot(321)
-plt.hist(time1, bins=bins_a, range=range_a, histtype='step', color='C0', label='tau')
-plt.hist(time2, bins=bins_a, range=range_a, histtype='step', color='C1', label='had')
-plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
-tmin_a, tmax_a = get_range_plot(n4, bins4)
-plt.xlim(tmin_a, tmax_a)
-plt.legend(fontsize=10)
-
-plt.subplot(322)
-plt.hist(time3, bins=bins_b, range=range_b, histtype='step', color='C0', label='tau')
-plt.hist(time2, bins=bins_b, range=range_b, histtype='step', color='C1', label='had')
-plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
-tmin_b, tmax_b = get_range_plot(n5, bins5)
-plt.xlim(tmin_b, tmax_b)
-plt.legend(fontsize=10)
-
-plt.subplot(323)
-plt.plot(bins4, gaussian(bins4, pos1a, wid1a, amp1a), label='Gaussian 1')
-plt.plot(bins4, gaussian(bins4, pos1b, wid1b, amp1b), label='Gaussian 2')
-plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
-plt.plot(bins4, fit_function_gaussian(bins4, *fitparams1), color='C3', label='Double Gaussian Fit')
-plt.xlim(tmin4, tmax4)
-plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq1, chisqdof1, bin4, len(guesses1)), fontsize=11)
-plt.legend(fontsize=10)
-
-plt.subplot(324)
-plt.plot(bins5, gaussian(bins5, pos2a, wid2a, amp2a), label='Gaussian 1')
-plt.plot(bins5, gaussian(bins5, pos2b, wid2b, amp2b), label='Gaussian 2')
-plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
-plt.plot(bins5, fit_function_gaussian(bins5, *fitparams2), color='C3', label='Double Gaussian Fit')
-plt.xlim(tmin5, tmax5)
-plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq3, chisqdof3, bin5, len(guesses2)), fontsize=11)
-plt.legend(fontsize=10)
-
-plt.subplot(325)
-plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
-plt.plot(bins4, gaussian(bins4, *fitparams3), color='C3', label='Single Gaussian Fit')
-plt.xlim(tmin4, tmax4)
-plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq2, chisqdof2, bin4, len(guesses3)), fontsize=11)
-plt.legend(fontsize=10)
-
-plt.subplot(326)
-plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
-plt.plot(bins5, gaussian(bins5, *fitparams4), color='C3', label='Single Gaussian Fit')
-plt.xlim(tmin5, tmax5)
-plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq4, chisqdof4, bin5, len(guesses4)), fontsize=11)
-plt.legend(fontsize=10)
-
-plt.subplots_adjust(top=0.90, bottom=0.06, left=0.08, right=0.93, hspace=0.35, wspace=0.15)
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_string{}{}/{}_TeV_PMT_ID_{}{}{}_gaussian_fits.png'.format(neutrino_energy, neutrino_energy, a, b, neutrino_energy, *PMT_ID))
-stop = timeit.default_timer()
-print('runtime=', stop-start)
-plt.show()
+#
+# f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params.txt'.format(neutrino_energy), 'a+')
+# f.write("#####################################################################\n")
+# f.write("\nGaussian Fits; PMT_ID: [{}, {}, {}]\n".format(*PMT_ID))
+# f.write("\n{} TeV Tau Neutrino\n".format(2*neutrino_energy))
+# f.write("Gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\n".format(pos1a, wid1a, amp1a))
+# f.write("Gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\n".format(pos1b, wid1b, amp1b))
+# f.write("\n{} TeV Electron Neutrino\n".format(2*neutrino_energy))
+# f.write("Gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\n".format(pos2a, wid2a, amp2a))
+# f.write("Gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\n".format(pos2b, wid2b, amp2b))
+# f.close()
+#
+# plt.figure(figsize=(12,10))
+# plt.suptitle('{} TeV Time Residuals with Gaussian Fits;\nPMT_ID = [{}, {}, {}], distance = {:.4f} m, angle={:.4f} degrees'.format(neutrino_energy, *PMT_ID, d, theta), fontsize=14)
+#
+# plt.subplot(321)
+# plt.hist(time1, bins=bins_a, range=range_a, histtype='step', color='C0', label='tau')
+# plt.hist(time2, bins=bins_a, range=range_a, histtype='step', color='C1', label='had')
+# plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
+# tmin_a, tmax_a = get_range_plot(n4, bins4)
+# plt.xlim(tmin_a, tmax_a)
+# plt.legend(fontsize=10)
+#
+# plt.subplot(322)
+# plt.hist(time3, bins=bins_b, range=range_b, histtype='step', color='C0', label='tau')
+# plt.hist(time2, bins=bins_b, range=range_b, histtype='step', color='C1', label='had')
+# plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
+# tmin_b, tmax_b = get_range_plot(n5, bins5)
+# plt.xlim(tmin_b, tmax_b)
+# plt.legend(fontsize=10)
+#
+# plt.subplot(323)
+# plt.plot(bins4, gaussian(bins4, pos1a, wid1a, amp1a), label='Gaussian 1')
+# plt.plot(bins4, gaussian(bins4, pos1b, wid1b, amp1b), label='Gaussian 2')
+# plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
+# plt.plot(bins4, fit_function_gaussian(bins4, *fitparams1), color='C3', label='Double Gaussian Fit')
+# plt.xlim(tmin4, tmax4)
+# plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq1, chisqdof1, bin4, len(guesses1)), fontsize=11)
+# plt.legend(fontsize=10)
+#
+# plt.subplot(324)
+# plt.plot(bins5, gaussian(bins5, pos2a, wid2a, amp2a), label='Gaussian 1')
+# plt.plot(bins5, gaussian(bins5, pos2b, wid2b, amp2b), label='Gaussian 2')
+# plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
+# plt.plot(bins5, fit_function_gaussian(bins5, *fitparams2), color='C3', label='Double Gaussian Fit')
+# plt.xlim(tmin5, tmax5)
+# plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq3, chisqdof3, bin5, len(guesses2)), fontsize=11)
+# plt.legend(fontsize=10)
+#
+# plt.subplot(325)
+# plt.hist(time4, bins=bins_a, range=range_a, histtype='step', color='C2', label='Sum')
+# plt.plot(bins4, gaussian(bins4, *fitparams3), color='C3', label='Single Gaussian Fit')
+# plt.xlim(tmin4, tmax4)
+# plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq2, chisqdof2, bin4, len(guesses3)), fontsize=11)
+# plt.legend(fontsize=10)
+#
+# plt.subplot(326)
+# plt.hist(time5, bins=bins_b, range=range_b, histtype='step', color='C2', label='Sum')
+# plt.plot(bins5, gaussian(bins5, *fitparams4), color='C3', label='Single Gaussian Fit')
+# plt.xlim(tmin5, tmax5)
+# plt.title('chi^2 = {:.2f}, chi^2/dof = {:.2f}, bins = {}, params = {}'.format(chisq4, chisqdof4, bin5, len(guesses4)), fontsize=11)
+# plt.legend(fontsize=10)
+#
+# plt.subplots_adjust(top=0.90, bottom=0.06, left=0.08, right=0.93, hspace=0.35, wspace=0.15)
+# plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_string{}{}/{}_TeV_PMT_ID_{}{}{}_gaussian_fits.png'.format(neutrino_energy, neutrino_energy, a, b, neutrino_energy, *PMT_ID))
+# stop = timeit.default_timer()
+# print('runtime=', stop-start)
+# plt.show()

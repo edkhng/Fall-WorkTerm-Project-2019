@@ -63,7 +63,7 @@ def bi_gaussian(x, pos, wid, amp, r):
 def gaussian(x, pos, wid, amp):
     """Function for Gaussian centered at pos, where wid is the FWHM
        and amp is the amplitude."""
-    return abs(amp)*np.exp(-4*np.log(2)*((x-pos)/(wid))**2)
+    return amp*np.exp(-4*np.log(2)*((x-pos)/wid)**2)
 
 
 def get_peak(n, bins):

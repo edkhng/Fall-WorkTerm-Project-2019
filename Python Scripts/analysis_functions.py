@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_data(fname, PMT_ID = ''):
+def get_data(data, PMT_ID = ''):
     """Obtains the data from the csv file. If PMT_ID is specified then
        the data for that specific PMT is returned if then all the data
        returned."""
@@ -77,7 +77,7 @@ def get_peak(n, bins):
 
 
 def get_range(time):
-    """Get time range of first 85% of data"""
+    """Get time range of first 80% of data"""
     time.sort()
     N = len(time)
     time = time[0:-int(N*0.2)]

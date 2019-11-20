@@ -13,9 +13,14 @@ neutrino_energy = 100
 fname1 = 'final_data/tau_{}TeV377_nt_Ntuple.csv'.format(neutrino_energy)
 fname2 = 'final_data/had_{}TeV411_nt_Ntuple.csv'.format(neutrino_energy)
 fname3 = 'final_data/e_{}TeV371_nt_Ntuple.csv'.format(neutrino_energy)
-
 fname4 = 'final_data/tau_had_merge_{}_TeV.csv'.format(neutrino_energy)
 fname5 = 'final_data/e_had_merge_{}_TeV.csv'.format(neutrino_energy)
+
+data1 = np.loadtxt(fname1, delimiter=',', comments='#')
+data2 = np.loadtxt(fname2, delimiter=',', comments='#')
+data3 = np.loadtxt(fname3, delimiter=',', comments='#')
+data4 = np.loadtxt(fname4, delimiter=',', comments='#')
+data5 = np.loadtxt(fname5, delimiter=',', comments='#')
 
 for k in range(9):
     a = k % 3
@@ -33,11 +38,11 @@ for k in range(9):
     for i in range(12):
 
         PMT_ID = [a, b, i]
-        layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(fname1, PMT_ID)
-        layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(fname2, PMT_ID)
-        layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(fname3, PMT_ID)
-        layerID4, columnID4, cellID4, time4, x4, y4, z4, energy4 = get_data(fname4, PMT_ID)
-        layerID5, columnID5, cellID5, time5, x5, y5, z5, energy5 = get_data(fname5, PMT_ID)
+        layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(data1, PMT_ID)
+        layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(data2, PMT_ID)
+        layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(data3, PMT_ID)
+        layerID4, columnID4, cellID4, time4, x4, y4, z4, energy4 = get_data(data4, PMT_ID)
+        layerID5, columnID5, cellID5, time5, x5, y5, z5, energy5 = get_data(data5, PMT_ID)
 
         f = open('final_results/{}_TeV_string{}{}/string{}{}_output.txt'.format(neutrino_energy, a, b, a, b), 'a+')
         f.write("#####################################################################\n")

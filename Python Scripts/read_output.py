@@ -1,7 +1,10 @@
-# import numpy as np
-# import os
-
-fname = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/100 TeV/tau_100TeV_b.out'
+"""
+The output file for the tau simulation includes the decay time.
+This script scans through the output file and records the decay
+time for each event and the number of hits, then saves it to a csv.
+"""
+energy = 10
+fname = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Outputs/tau_{}TeV.out'.format(energy, energy)
 
 decay_times = []
 event_IDs = []
@@ -9,35 +12,32 @@ hits = []
 
 f = open(fname, 'r')
 for line in f.readlines():
+    # scan through every line in the output file and break it down into each word
     words = line.split()
     for word in words:
         if word == ';decay_time:':
+            # scan each word for "decay_time", when found save the next word
+            # which will be the decay time
             decay_time = words[words.index(word) + 1]
             decay_times.append(float(decay_time))
 
         if word == 'ID:':
+            # scan each word for "ID", when found save the next word
+            # which will be the event ID number
             event_ID = words[words.index(word) + 1]
             event_IDs.append(float(event_ID))
 
         if word == 'Hit:':
+            # scan each word for "Hit", when found save the next word
+            # which will be the number of hits for that event
             hit = words[words.index(word) + 1]
             hits.append(float(hit))
 
-f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/100 TeV/100_TeV_tau_decay_times.csv', 'a+')
+# save the results to a csv file
+f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_tau_decay_times.csv', 'a+').format(energy, energy)
 f.write('#Event ID,Hits,Decay Time\n')
 for i in range(len(event_IDs)):
-    f.write('{},{},{}\n'.format(event_IDs[i],hits[i],decay_times[i]))
+    # lists are out of order, so order by the ID number
+    index = event_IDs.index(i)
+    f.write('{},{},{}\n'.format(event_IDs[index],hits[index],decay_times[index]))
 f.close()
-
-# import matplotlib.pyplot as plt
-# print(max(decay_times))
-# print(len(decay_times))
-# print(decay_times)
-# plt.hist(decay_times, bins=15, range=(0,40))
-# plt.show()
-# print(len(decay_times))
-# print(decay_times)
-# print(len(event_IDs))
-# # print(event_IDs)
-# print(len(hits))
-# print(hits)

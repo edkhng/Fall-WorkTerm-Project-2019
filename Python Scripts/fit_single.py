@@ -1,29 +1,41 @@
+"""
+This script fits the time residuals of the tau and e- events for a single
+sensor. The type of fit and the event needs to be selected by the user.
+Mostly just used if I want a larger/nicer plot of a specific fit
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from analysis_functions import *
 from scipy.optimize import curve_fit
 from scipy.stats import chisquare
 
-neutrino_energy = 100
+energy = 100
 
-fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV377_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV411_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-# fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV371_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV377_nt_Ntuple.csv'.format(energy, energy)
+fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV411_nt_Ntuple.csv'.format(energy, energy)
+# fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV371_nt_Ntuple.csv'.format(energy, energy)
+fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(energy, energy)
+# fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(energy, energy)
 
-fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
-# fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
+data1 = np.loadtxt(fname1, delimiter=',', comments='#')
+data2 = np.loadtxt(fname2, delimiter=',', comments='#')
+# data3 = np.loadtxt(fname3, delimiter=',', comments='#')
+data4 = np.loadtxt(fname4, delimiter=',', comments='#')
+# data5 = np.loadtxt(fname5, delimiter=',', comments='#')
 
 PMT_ID = [1, 1, 2]
-layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(fname1, PMT_ID)
-layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(fname2, PMT_ID)
-# layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(fname3, PMT_ID)
-layerID4, columnID4, cellID4, time4, x4, y4, z4, energy4 = get_data(fname4, PMT_ID)
-# layerID5, columnID5, cellID5, time5, x5, y5, z5, energy5 = get_data(fname5, PMT_ID)
+
+layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(data1, PMT_ID)
+layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(data2, PMT_ID)
+# layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(data3, PMT_ID)
+layerID4, columnID4, cellID4, time4, x4, y4, z4, energy4 = get_data(data4, PMT_ID)
+# layerID5, columnID5, cellID5, time5, x5, y5, z5, energy5 = get_data(data5, PMT_ID)
 
 PMT_pos = PMT_ID_to_pos(PMT_ID)
-dx, dy, dz = seperation_vector('A', PMT_pos)
+dx, dy, dz = seperation_vector(PMT_pos)
 d = distance_to_vertex(dx, dy, dz)
-theta = angle_to_vertex('A', dx, dy, dz)
+theta = angle_to_vertex(dx, dy, dz)
 
 time1 = clean_data(time1, d)
 time2 = clean_data(time2, d)
@@ -136,7 +148,7 @@ chisqdof4 = chisq4/dof4
 
 
 plt.figure(figsize=(10,7))
-# plt.suptitle('{} TeV Time Residuals with Bi_gaussian Fits;\nPMT_ID = [{}, {}, {}],distance = {:.4f} m, angle={:.4f} degrees'.format(neutrino_energy, *PMT_ID, d, theta), fontsize=14)
+# plt.suptitle('{} TeV Time Residuals with Bi_gaussian Fits;\nPMT_ID = [{}, {}, {}],distance = {:.4f} m, angle={:.4f} degrees'.format(energy, *PMT_ID, d, theta), fontsize=14)
 
 plt.hist(time1, bins=bins[0], range=(min(time1), max(time1)), histtype='step', color='C0', label='tau')
 plt.hist(time2, bins=bins[1], range=(min(time2), max(time2)), histtype='step', color='C1', label='had')

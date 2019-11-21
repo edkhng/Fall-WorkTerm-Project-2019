@@ -1,3 +1,7 @@
+"""
+All the useful reoccuring functions in one place.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -169,15 +173,12 @@ def PMT_ID_to_pos(PMT_ID):
     return x, y, z
 
 
-def seperation_vector(vertex_type, PMT_pos):
+def seperation_vector(PMT_pos):
     """Returns the seperation vector between the vertex and the PMT."""
-    if vertex_type == 'A':
-        vertex = [-10, -20, -62.5]
-    elif vertex_type == 'B':
-        vertex = [-20, -62.5, -10]
-    dx = vertex[0] - PMT_pos[0]
-    dy = vertex[1] - PMT_pos[1]
-    dz = vertex[2] - PMT_pos[2]
+    vertex = [-10, -20, -62.5]
+    dx = PMT_pos[0] - vertex[0]
+    dy = PMT_pos[1] - vertex[1]
+    dz = PMT_pos[2] - vertex[2]
     return dx, dy, dz
 
 
@@ -188,11 +189,7 @@ def distance_to_vertex(dx, dy, dz):
 
 def angle_to_vertex(vertex_type, dx, dy, dz):
     """Returns the angle between the vertex and the PMT."""
-
-    if vertex_type == 'A':
-        angle = np.arctan((np.sqrt(dx**2 + dy**2)) / dz)
-    elif vertex_type == 'B':
-        angle = np.arctan((np.sqrt(dx**2 + dz**2)) / dy)
+    angle = np.arctan((np.sqrt(dx**2 + dy**2)) / dz)
 
     # convert angle to degrees
     angle = angle*180/np.pi

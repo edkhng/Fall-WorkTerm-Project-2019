@@ -1,3 +1,11 @@
+"""
+This script goes through every single sensor and plots the time residuals
+for both the tau and e- events. The plots are grouped by strings, where
+a single plot has the time residuals of all the sensors on that string.
+The script also records the number of hits by each component, the approximate
+time range, peak height, location and FWHM in a text file.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from analysis_functions import *
@@ -8,13 +16,13 @@ import timeit
 
 start = timeit.default_timer()
 
-neutrino_energy = 100
+energy = 100
 
-fname1 = 'final_data/tau_{}TeV377_nt_Ntuple.csv'.format(neutrino_energy)
-fname2 = 'final_data/had_{}TeV411_nt_Ntuple.csv'.format(neutrino_energy)
-fname3 = 'final_data/e_{}TeV371_nt_Ntuple.csv'.format(neutrino_energy)
-fname4 = 'final_data/tau_had_merge_{}_TeV.csv'.format(neutrino_energy)
-fname5 = 'final_data/e_had_merge_{}_TeV.csv'.format(neutrino_energy)
+fname1 = 'final_data/tau_{}TeV377_nt_Ntuple.csv'.format(energy)
+fname2 = 'final_data/had_{}TeV411_nt_Ntuple.csv'.format(energy)
+fname3 = 'final_data/e_{}TeV371_nt_Ntuple.csv'.format(energy)
+fname4 = 'final_data/tau_had_merge_{}_TeV.csv'.format(energy)
+fname5 = 'final_data/e_had_merge_{}_TeV.csv'.format(energy)
 
 data1 = np.loadtxt(fname1, delimiter=',', comments='#')
 data2 = np.loadtxt(fname2, delimiter=',', comments='#')
@@ -34,7 +42,7 @@ for k in range(9):
     fig1, ax1 = plt.subplots(nrows=3, ncols=4, figsize=(18,10))
     fig2, ax2 = plt.subplots(nrows=3, ncols=4, figsize=(18,10))
 
-    os.mkdir('final_results/{}_TeV_string{}{}'.format(neutrino_energy, a, b))
+    os.mkdir('final_results/{}_TeV_string{}{}'.format(energy, a, b))
     for i in range(12):
 
         PMT_ID = [a, b, i]
@@ -44,19 +52,19 @@ for k in range(9):
         layerID4, columnID4, cellID4, time4, x4, y4, z4, energy4 = get_data(data4, PMT_ID)
         layerID5, columnID5, cellID5, time5, x5, y5, z5, energy5 = get_data(data5, PMT_ID)
 
-        f = open('final_results/{}_TeV_string{}{}/string{}{}_output.txt'.format(neutrino_energy, a, b, a, b), 'a+')
+        f = open('final_results/{}_TeV_string{}{}/string{}{}_output.txt'.format(energy, a, b, a, b), 'a+')
         f.write("#####################################################################\n")
         f.write("\nPMT_ID: [{}, {}, {}]\n".format(*PMT_ID))
-        f.write("Number of hits {} TeV Tau: {}\n".format(neutrino_energy, len(x1)))
-        f.write("Number of hits {} TeV Had: {}\n".format(neutrino_energy, len(x2)))
-        f.write("Number of hits {} TeV e-: {}\n".format(neutrino_energy, len(x3)))
-        f.write("Total number of hits tau neutrino {} TeV: {}\n".format(neutrino_energy, len(x4)))
-        f.write("Total number of hits electron neutrino {} TeV: {}\n".format(neutrino_energy, len(x5)))
+        f.write("Number of hits {} TeV Tau: {}\n".format(energy, len(x1)))
+        f.write("Number of hits {} TeV Had: {}\n".format(energy, len(x2)))
+        f.write("Number of hits {} TeV e-: {}\n".format(energy, len(x3)))
+        f.write("Total number of hits tau neutrino {} TeV: {}\n".format(energy, len(x4)))
+        f.write("Total number of hits electron neutrino {} TeV: {}\n".format(energy, len(x5)))
 
         PMT_pos = PMT_ID_to_pos(PMT_ID)
-        dx, dy, dz = seperation_vector('A', PMT_pos)
+        dx, dy, dz = seperation_vector(PMT_pos)
         d = distance_to_vertex(dx, dy, dz)
-        theta = angle_to_vertex('A', dx, dy, dz)
+        theta = angle_to_vertex(dx, dy, dz)
 
         N = min(len(time1), len(time2), len(time3))
         time_range = get_range(time4)
@@ -119,12 +127,12 @@ for k in range(9):
         f.write("Total electron neutrino; peak_height, peak_pos, FWHM: {} photons, {} ns, {} ns\n".format(peak_height5, peak_pos5, FWHM5))
         f.close()
 
-    fig1.suptitle('Time Residuals {} TeV Tau Neutrino; String_{}{}'.format(2*neutrino_energy, a,b), fontsize=14)
-    fig2.suptitle('Time Residuals {} TeV Electron Neutrino; String_{}{}'.format(2*neutrino_energy, a,b), fontsize=14)
+    fig1.suptitle('Time Residuals {} TeV Tau Neutrino; String_{}{}'.format(2*energy, a,b), fontsize=14)
+    fig2.suptitle('Time Residuals {} TeV Electron Neutrino; String_{}{}'.format(2*energy, a,b), fontsize=14)
     fig1.subplots_adjust(top=0.90, bottom=0.04, left=0.06, right=0.93, hspace=0.3, wspace=0.2)
     fig2.subplots_adjust(top=0.90, bottom=0.04, left=0.06, right=0.93, hspace=0.3, wspace=0.2)
-    fig1.savefig('final_results/{}_TeV_string{}{}/tau_string{}{}_output.png'.format(neutrino_energy, a, b, a, b))
-    fig2.savefig('final_results/{}_TeV_string{}{}/e_string{}{}_output.png'.format(neutrino_energy, a, b, a, b))
+    fig1.savefig('final_results/{}_TeV_string{}{}/tau_string{}{}_output.png'.format(energy, a, b, a, b))
+    fig2.savefig('final_results/{}_TeV_string{}{}/e_string{}{}_output.png'.format(energy, a, b, a, b))
 # stop = timeit.default_timer()
 # print('runtime=', stop-start)
 # plt.show()

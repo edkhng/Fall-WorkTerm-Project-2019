@@ -1,3 +1,12 @@
+"""
+This script fits the time residuals of the tau and e- events for the given
+sensors with a double gaussian and also a single gaussian. The user will
+need to input the PMT_IDs of the sensors they want fitted. The script
+produces a plot of the time residuals, and a plot of each fit for the tau
+and e- event. It also records the fitting parameters, chi^2 value and
+p-values in a csv.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from analysis_functions import *
@@ -5,14 +14,19 @@ from scipy.optimize import curve_fit
 from scipy.stats import chisquare
 import timeit
 
-neutrino_energy = 10
+energy = 10
 
-fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV423_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV234_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
-fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV163_nt_Ntuple.csv'.format(neutrino_energy, neutrino_energy)
+fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_{}TeV423_nt_Ntuple.csv'.format(energy, energy)
+fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/had_{}TeV234_nt_Ntuple.csv'.format(energy, energy)
+fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_{}TeV163_nt_Ntuple.csv'.format(energy, energy)
+fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(energy, energy)
+fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(energy, energy)
 
-fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/tau_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
-fname5 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/e_had_merge_{}_TeV.csv'.format(neutrino_energy, neutrino_energy)
+data1 = np.loadtxt(fname1, delimiter=',', comments='#')
+data2 = np.loadtxt(fname2, delimiter=',', comments='#')
+data3 = np.loadtxt(fname3, delimiter=',', comments='#')
+data4 = np.loadtxt(fname4, delimiter=',', comments='#')
+data5 = np.loadtxt(fname5, delimiter=',', comments='#')
 
 PMT_IDs = [[1, 1, 0], [1, 1, 1], [1, 1, 5], [1, 1, 7]]
 
@@ -21,16 +35,16 @@ for PMT_ID in PMT_IDs:
     a = PMT_ID[0]
     b = PMT_ID[1]
 
-    layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(fname1, PMT_ID)
-    layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(fname2, PMT_ID)
-    layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(fname3, PMT_ID)
-    layerID4, columnID4, cellID4, time4, x4, y4, z4, energy4 = get_data(fname4, PMT_ID)
-    layerID5, columnID5, cellID5, time5, x5, y5, z5, energy5 = get_data(fname5, PMT_ID)
+    layerID1, columnID1, cellID1, time1, x1, y1, z1, energy1 = get_data(data1, PMT_ID)
+    layerID2, columnID2, cellID2, time2, x2, y2, z2, energy2 = get_data(data2, PMT_ID)
+    layerID3, columnID3, cellID3, time3, x3, y3, z3, energy3 = get_data(data3, PMT_ID)
+    layerID4, columnID4, cellID4, time4, x4, y4, z4, energy4 = get_data(data4, PMT_ID)
+    layerID5, columnID5, cellID5, time5, x5, y5, z5, energy5 = get_data(data5, PMT_ID)
 
     PMT_pos = PMT_ID_to_pos(PMT_ID)
-    dx, dy, dz = seperation_vector('A', PMT_pos)
+    dx, dy, dz = seperation_vector(PMT_pos)
     d = distance_to_vertex(dx, dy, dz)
-    theta = angle_to_vertex('A', dx, dy, dz)
+    theta = angle_to_vertex(dx, dy, dz)
 
     N = min(len(time1), len(time2), len(time3))
     time_range = get_range(time4)
@@ -89,13 +103,16 @@ for PMT_ID in PMT_IDs:
     guesses3 = [peak_pos4, FWHM4, peak_height4]
     guesses4 = [peak_pos5, FWHM5, peak_height5]
 
-    fitparams1, fitcov1 = curve_fit(fit_function_gaussian, bins4[:-1], n4, bounds=(0., np.inf), p0=guesses1, maxfev=100000)
-    fitparams2, fitcov2 = curve_fit(fit_function_gaussian, bins5[:-1], n5, bounds=(0., np.inf), p0=guesses2, maxfev=100000)
-    fitparams3, fitcov3 = curve_fit(gaussian, bins4[:-1], n4, bounds=(0., np.inf), p0=guesses3, maxfev=100000)
-    fitparams4, fitcov4 = curve_fit(gaussian, bins5[:-1], n5, bounds=(0., np.inf), p0=guesses4, maxfev=100000)
+    sigma4 = np.sqrt(n4)
+    sigma5 = np.sqrt(n5)
 
-    # fitparams1_error = np.sqrt(np.diag(fitcov1))
-    # fitparams2_error = np.sqrt(np.diag(fitcov2))
+    fitparams1, fitcov1 = curve_fit(fit_function_gaussian, bins4[:-1], n4, sigma=sigma4, bounds=(0., np.inf), p0=guesses1, maxfev=100000)
+    fitparams2, fitcov2 = curve_fit(fit_function_gaussian, bins5[:-1], n5, sigma=sigma5, bounds=(0., np.inf), p0=guesses2, maxfev=100000)
+    fitparams3, fitcov3 = curve_fit(gaussian, bins4[:-1], n4, sigma=sigma4, bounds=(0., np.inf), p0=guesses3, maxfev=100000)
+    fitparams4, fitcov4 = curve_fit(gaussian, bins5[:-1], n5, sigma=sigma5, bounds=(0., np.inf), p0=guesses4, maxfev=100000)
+
+    fitparams1_error = np.sqrt(np.diag(fitcov1))
+    fitparams2_error = np.sqrt(np.diag(fitcov2))
 
     dof1 = bin4 - len(guesses1)
     dof2 = bin5 - len(guesses2)
@@ -118,31 +135,31 @@ for PMT_ID in PMT_IDs:
     f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/fitting_params_gaussian_tau_all.csv', 'a+')
     # if PMT_ID == [0,0,0]:
     #     f.write('# energy, PMT_ID, pos1, pos2, wid1, wid2, amp1, amp2, chi^2, bins, params\n')
-    f.write('{}, {}-{}-{}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(neutrino_energy, *PMT_ID, *fitparams1, chisq1, bin4, len(guesses1)))
+    f.write('{}, {}-{}-{}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(energy, *PMT_ID, *fitparams1, chisq1, bin4, len(guesses1)))
     # f.write('# pos1, pos2, wid1, wid2, amp1, amp2, upos1, upos2, uwid1, uwid2, uamp1, uamp2')
     # f.write('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.format(*fitparams1, *fitparams1_error))
 
     f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/fitting_params_gaussian_e_all.csv', 'a+')
     # if PMT_ID == [0,0,0]:
     #     f.write('# energy, PMT_ID, pos1, pos2, wid1, wid2, amp1, amp2, chi^2, bins, params\n')
-    f.write('{}, {}-{}-{}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(neutrino_energy, *PMT_ID, *fitparams2, chisq2, bin5, len(guesses2)))
+    f.write('{}, {}-{}-{}, {}, {}, {}, {}, {}, {}, {}, {}, {}\n'.format(energy, *PMT_ID, *fitparams2, chisq2, bin5, len(guesses2)))
     # f.write('# pos1, pos2, wid1, wid2, amp1, amp2, upos1, upos2, uwid1, uwid2, uamp1, uamp2')
     # f.write('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.format(*fitparams2, *fitparams2_error))
 
     #
-    # f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params.txt'.format(neutrino_energy), 'a+')
+    # f = open('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params.txt'.format(energy), 'a+')
     # f.write("#####################################################################\n")
     # f.write("\nGaussian Fits; PMT_ID: [{}, {}, {}]\n".format(*PMT_ID))
-    # f.write("\n{} TeV Tau Neutrino\n".format(2*neutrino_energy))
+    # f.write("\n{} TeV Tau Neutrino\n".format(2*energy))
     # f.write("Gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\n".format(pos1a, wid1a, amp1a))
     # f.write("Gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\n".format(pos1b, wid1b, amp1b))
-    # f.write("\n{} TeV Electron Neutrino\n".format(2*neutrino_energy))
+    # f.write("\n{} TeV Electron Neutrino\n".format(2*energy))
     # f.write("Gaussian 1:\npos1 = {:.2f}\nwid1 = {:.2f}\namp1 = {:.2f}\n".format(pos2a, wid2a, amp2a))
     # f.write("Gaussian 2:\npos2 = {:.2f}\nwid2 = {:.2f}\namp2 = {:.2f}\n".format(pos2b, wid2b, amp2b))
     # f.close()
 
     plt.figure(figsize=(12,10))
-    plt.suptitle('{} TeV Time Residuals with Gaussian Fits;\nPMT_ID = [{}, {}, {}], distance = {:.4f} m, angle={:.4f} degrees'.format(neutrino_energy, *PMT_ID, d, theta), fontsize=14)
+    plt.suptitle('{} TeV Time Residuals with Gaussian Fits;\nPMT_ID = [{}, {}, {}], distance = {:.4f} m, angle={:.4f} degrees'.format(energy, *PMT_ID, d, theta), fontsize=14)
 
     plt.subplot(321)
     plt.hist(time1, bins=bins_a, range=range_a, histtype='step', color='C0', label='tau')
@@ -193,5 +210,5 @@ for PMT_ID in PMT_IDs:
     plt.legend(fontsize=10)
 
     plt.subplots_adjust(top=0.90, bottom=0.06, left=0.08, right=0.93, hspace=0.35, wspace=0.15)
-    plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_string{}{}/{}_TeV_PMT_ID_{}{}{}_gaussian_fits.png'.format(neutrino_energy, neutrino_energy, a, b, neutrino_energy, *PMT_ID))
+    plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_string{}{}/{}_TeV_PMT_ID_{}{}{}_gaussian_fits.png'.format(energy, energy, a, b, energy, *PMT_ID))
 # plt.show()

@@ -61,7 +61,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
 	G4int eid = event->GetEventID();
 	analysisManager->FillNtupleIColumn(8, eid);
 
-	G4cout << "End of Event, Event ID:" << eid << G4endl;
+	G4cout << "End of Event, Event ID: " << eid << G4endl;
 	G4cout<< "Number of Hit: " <<nhit<<G4endl;
 
 	for (unsigned long i = 0; i < nhit; ++i) {
@@ -73,7 +73,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
 		auto layerID = hit->GetLayerID();
 		auto columnID = hit->GetColumnID();
 		auto cellID = hit->GetCellID();
-		
+
 		analysisManager->FillNtupleIColumn(0, layerID);
 		analysisManager->FillNtupleIColumn(1, columnID);
 		analysisManager->FillNtupleIColumn(2, cellID);

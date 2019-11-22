@@ -9,7 +9,6 @@ def get_data(data, PMT_ID = ''):
     """Obtains the data from the csv file. If PMT_ID is specified then
        the data for that specific PMT is returned if then all the data
        returned."""
-    data = np.loadtxt(fname, delimiter=',', comments='#')
     layerID = data[:,0]
     columnID = data[:,1]
     cellID = data[:,2]
@@ -19,7 +18,7 @@ def get_data(data, PMT_ID = ''):
     z = data[:,6]/1000  # [m]
     energy = data[:,7]
     if PMT_ID:
-        select = (layerID == PMT_ID[0]) & (columnID == PMT_ID[1]) & (cellID == PMT_ID[2])
+        select = (layerID == PMT_ID[0]) & (columnID == PMT_ID[1]) & (cellID == PMT_ID[2]) & (time < 900)
 
         layerID = layerID[select]
         columnID = columnID[select]
@@ -93,7 +92,7 @@ def get_range_plot(n, bins):
 # def get_range_plot(time):
     """Return a tmin and tmax that covers an appropriate amount of the data for plotting."""
     peak_height = get_peak(n, bins)[0]
-    cutoff = max(int(peak_height/10), 4)
+    cutoff = max(int(peak_height/10), 2)
     in_range = n >= cutoff
     tmin = bins[0]
     bins = bins[1:]
@@ -187,7 +186,7 @@ def distance_to_vertex(dx, dy, dz):
     return np.sqrt(dx**2 + dy**2 + dz**2)
 
 
-def angle_to_vertex(vertex_type, dx, dy, dz):
+def angle_to_vertex(dx, dy, dz):
     """Returns the angle between the vertex and the PMT."""
     angle = np.arctan((np.sqrt(dx**2 + dy**2)) / dz)
 

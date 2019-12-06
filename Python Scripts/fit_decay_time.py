@@ -7,7 +7,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
-energy = 10
+energy = 100
 fname = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/{}_TeV_tau_decay_times.csv'.format(energy, energy)
 data = np.loadtxt(fname, delimiter=',')
 
@@ -19,8 +19,8 @@ def decay(x, mu):
     return mu*np.exp(-mu*x)
 
 # adjust number of bins and range for plot
-bin = 6
-range = (0,6)
+bin = 15
+range = (0,55)
 
 n, bins = np.histogram(decay_times, bins=bin, range=range, density=True)
 sigma = np.sqrt(n)

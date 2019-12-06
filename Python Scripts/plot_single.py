@@ -1,6 +1,8 @@
 """
 This script creates a single nice plot of the time residuals. The user
-will need to choose whether it plots the tau or e- event.
+will need to choose whether it plots the tau or e- event. Comment out
+everything numbered 3 and 4 to plot tau events and comment out 1 and 4
+to plot e- events.
 """
 
 import numpy as np
@@ -39,12 +41,6 @@ PMT_pos = PMT_ID_to_pos(PMT_ID)
 dx, dy, dz = seperation_vector(PMT_pos)
 d = distance_to_vertex(dx, dy, dz)
 theta = angle_to_vertex(dx, dy, dz)
-
-# time1 = clean_data(time1, d)
-# time2 = clean_data(time2, d)
-# time3 = clean_data(time3, d)
-# time4 = clean_data(time4, d)
-# time5 = clean_data(time5, d)
 
 N = min(len(time1), len(time2))
 # print(N)

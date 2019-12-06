@@ -1,9 +1,11 @@
+#!/usr/bin/env python
 """
 This script goes through every single sensor and plots the time residuals
 for both the tau and e- events. The plots are grouped by strings, where
 a single plot has the time residuals of all the sensors on that string.
 The script also records the number of hits by each component, the approximate
-time range, peak height, location and FWHM in a text file.
+time range, peak height, location and FWHM in a text file. The script
+takes two arguments, the energy and the event ID. 
 """
 
 import numpy as np
@@ -11,11 +13,13 @@ import matplotlib.pyplot as plt
 from analysis_functions import *
 import timeit
 import os
+import sys
+
 
 start = timeit.default_timer()
 
-energy = 10
-event_ID = 0
+energy = int(sys.argv[1])
+event_ID = int(sys.argv[2])
 
 fname1 = '{} TeV Tau/tau_{}TeV{}_nt_Ntuple.csv'.format(energy, energy, event_ID)
 fname2 = '{} TeV Tau/{}_TeV_tau_decay_times.csv'.format(energy, energy)
@@ -23,10 +27,12 @@ fname2 = '{} TeV Tau/{}_TeV_tau_decay_times.csv'.format(energy, energy)
 data1 = np.loadtxt(fname1, delimiter=',', comments='#')
 data2 = np.loadtxt(fname2, delimiter=',', comments='#')
 
+hits = data2[:,1]
+hit = hits[event_ID]
 decay_times = data2[:,2]
 decay_time = decay_times[event_ID]
 
-os.mkdir('{} TeV Final Results/tau{}_decay_time={:.2f}'.format(energy, event_ID, decay_time))
+os.mkdir('{} TeV Final Results/tau{}_decay_time={:.2f}_hits={:.2e}'.format(energy, event_ID, decay_time, hit))
 
 for k in range(9):
     a = k % 3
@@ -40,9 +46,9 @@ for k in range(9):
     fig1, ax1 = plt.subplots(nrows=3, ncols=4, figsize=(18,10))
     fig2, ax2 = plt.subplots(nrows=3, ncols=4, figsize=(18,10))
 
-    os.mkdir('{} TeV Final Results/tau{}_decay_time={:.2f}/string{}{}'.format(energy, event_ID, decay_time, a, b))
+    os.mkdir('{} TeV Final Results/tau{}_decay_time={:.2f}_hits={:.2e}/string{}{}'.format(energy, event_ID, decay_time, hit, a, b))
 
-    f = open('{} TeV Final Results/tau{}_decay_time={:.2f}/string{}{}/string{}{}_output.txt'.format(energy, event_ID, decay_time, a, b, a, b), 'w+')
+    f = open('{} TeV Final Results/tau{}_decay_time={:.2f}_hits={:.2e}/string{}{}/string{}{}_output.txt'.format(energy, event_ID, decay_time, hit, a, b, a, b), 'w+')
     f.write("Decay time = {} ns\n".format(decay_time))
     f.close()
     for i in range(12):
@@ -105,7 +111,7 @@ for k in range(9):
         ax2[l][i % 4].set_title('PMT_ID=[{},{},{}], distance={:.2f} m\nangle={:.2f} degrees, bin_size={:.0f} ns'
                    .format(*PMT_ID, d, theta, bin_size), fontsize=11)
 
-        f = open('{} TeV Final Results/tau{}_decay_time={:.2f}/string{}{}/string{}{}_output.txt'.format(energy, event_ID, decay_time, a, b, a, b), 'a')
+        f = open('{} TeV Final Results/tau{}_decay_time={:.2f}_hits={:.2e}/string{}{}/string{}{}_output.txt'.format(energy, event_ID, decay_time, hit, a, b, a, b), 'a')
         f.write("#####################################################################\n")
         f.write("\nPMT_ID: [{}, {}, {}]\n".format(*PMT_ID))
         f.write("Total time range tau neutrino: {:.2f}-{:.2f} ns\n".format(tmin_a, tmax_a))
@@ -130,12 +136,14 @@ for k in range(9):
         f.write("Total electron neutrino; peak_height, peak_pos, FWHM: {} photons, {} ns, {} ns\n".format(peak_height5, peak_pos5, FWHM5))
         f.close()
 
-    fig1.suptitle('Time Residuals {} TeV Tau Neutrino; String_{}{}'.format(2*energy, a,b), fontsize=14)
-    fig2.suptitle('Time Residuals {} TeV Electron Neutrino; String_{}{}'.format(2*energy, a,b), fontsize=14)
+    fig1.suptitle('Time Residuals {} TeV Tau Neutrino; String_{}{}, eventID: {}, decay_time={:.2f} ns, hits={}'.format(2*energy, a, b, event_ID, decay_time, hit), fontsize=14)
+    fig2.suptitle('Time Residuals {} TeV Electron Neutrino; String_{}{}, eventID: {}, hits={}'.format(2*energy, a, b, event_ID, hit), fontsize=14)
     fig1.subplots_adjust(top=0.90, bottom=0.04, left=0.06, right=0.93, hspace=0.3, wspace=0.2)
     fig2.subplots_adjust(top=0.90, bottom=0.04, left=0.06, right=0.93, hspace=0.3, wspace=0.2)
-    fig1.savefig('{} TeV Final Results/tau{}_decay_time={:.2f}/string{}{}/tau_string{}{}_output.png'.format(energy, event_ID, decay_time, a, b, a, b))
-    fig2.savefig('{} TeV Final Results/tau{}_decay_time={:.2f}/string{}{}/e_string{}{}_output.png'.format(energy, event_ID, decay_time, a, b, a, b))
+    fig1.savefig('{} TeV Final Results/tau{}_decay_time={:.2f}_hits={:.2e}/string{}{}/tau_string{}{}_output.png'.format(energy, event_ID, decay_time, hit, a, b, a, b))
+    fig2.savefig('{} TeV Final Results/tau{}_decay_time={:.2f}_hits={:.2e}/string{}{}/e_string{}{}_output.png'.format(energy, event_ID, decay_time, hit, a, b, a, b))
+    plt.close()
+
 stop = timeit.default_timer()
 print('runtime=', stop-start)
 # plt.show()

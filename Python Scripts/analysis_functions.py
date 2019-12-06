@@ -33,6 +33,112 @@ def get_data(data, PMT_ID = ''):
 
     return layerID, columnID, cellID, time, x, y, z, energy
 
+
+def find_good_fits(data):
+    """Keep ones with amplitude ratio less than 4, a FWHM ratio
+     less than 4, and a time difference less than 100 ns"""
+    time_diff = abs(data[:,7] - data[:,6])
+    clean_data = []
+    for i in range(np.shape(data)[1]):
+        clean_data.append(data[:,i][time_diff < 100])
+
+    amp_ratio = clean_data[10]/clean_data[11]
+
+    for i in range(np.shape(data)[1]):
+        clean_data[i] = clean_data[i][(amp_ratio < 4) & (amp_ratio > 1/4)]
+
+    wid_ratio = clean_data[8]/clean_data[9]
+
+    for i in range(np.shape(data)[1]):
+        clean_data[i] = clean_data[i][(wid_ratio < 4) & (wid_ratio > 1/4)]
+
+    return clean_data
+
+
+
+def get_fit_data(data, hits_range=(0,400000), decay_time_range=(0,70)):
+    """Keep only the data within the time range and hits range"""
+    if type(data) == list:
+        if len(data) == 22:
+            event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1 = data
+
+            select1 = (decay_time1 < decay_time_range[1]) & (decay_time1 > decay_time_range[0])
+
+            event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+
+            select1 = (hits1 < hits_range[1]) & (hits1 > hits_range[0])
+
+            event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+
+            return event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1
+
+        elif len(data) == 26:
+            event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = data
+
+            select1 = (decay_time1 < decay_time_range[1]) & (decay_time1 > decay_time_range[0])
+
+            event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], r1a[select1], r1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], ur1a[select1], ur1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+
+            select1 = (hits1 < hits_range[1]) & (hits1 > hits_range[0])
+
+            event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], r1a[select1], r1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], ur1a[select1], ur1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+
+            return event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1
+
+    # if np.shape(data)[1] == 22:
+    #     event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1 = np.transpose(data)
+    #
+    #     select1 = (decay_time1 < decay_time_range[1]) & (decay_time1 > decay_time_range[0])
+    #
+    #     event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+    #
+    #     select1 = (hits1 < hits_range[1]) & (hits1 > hits_range[0])
+    #
+    #     event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+    #
+    #     return event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, chisq1, bins1, params1, p1
+
+    # elif np.shape(data)[1] == 26:
+    #     event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = np.transpose(data)
+    #
+    #     select1 = (decay_time1 < decay_time_range[1]) & (decay_time1 > decay_time_range[0])
+    #
+    #     event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], r1a[select1], r1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], ur1a[select1], ur1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+    #
+    #     select1 = (hits1 < hits_range[1]) & (hits1 > hits_range[0])
+    #
+    #     event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = event_ID1[select1], decay_time1[select1], hits1[select1], layerID1[select1], columnID1[select1], cellID1[select1], pos1a[select1], pos1b[select1], wid1a[select1], wid1b[select1], amp1a[select1], amp1b[select1], r1a[select1], r1b[select1], upos1a[select1], upos1b[select1], uwid1a[select1], uwid1b[select1], uamp1a[select1], uamp1b[select1], ur1a[select1], ur1b[select1], chisq1[select1], bins1[select1], params1[select1], p1[select1]
+    #
+    #     return event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1
+
+
+    elif np.shape(data)[1] == 18:
+        event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, r4, upos4, uwid4, uamp4, ur4, chisq4, bins4, params4, p4 = np.transpose(data)
+
+        select1 = (decay_time4 < decay_time_range[1]) & (decay_time4 > decay_time_range[0])
+
+        event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, r4, upos4, uwid4, uamp4, ur4, chisq4, bins4, params4, p4 = event_ID4[select1], decay_time4[select1], hits4[select1], layerID4[select1], columnID4[select1], cellID4[select1], pos4[select1], wid4[select1], amp4[select1], r4[select1], upos4[select1], uwid4[select1], uamp4[select1], ur4[select1], chisq4[select1], bins4[select1], params4[select1], p4[select1]
+
+        select1 = (hits4 < hits_range[1]) & (hits4 > hits_range[0])
+
+        event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, r4, upos4, uwid4, uamp4, ur4, chisq4, bins4, params4, p4 = event_ID4[select1], decay_time4[select1], hits4[select1], layerID4[select1], columnID4[select1], cellID4[select1], pos4[select1], wid4[select1], amp4[select1], r4[select1], upos4[select1], uwid4[select1], uamp4[select1], ur4[select1], chisq4[select1], bins4[select1], params4[select1], p4[select1]
+
+        return event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, r4, upos4, uwid4, uamp4, ur4, chisq4, bins4, params4, p4
+
+
+    else:
+        event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, upos4, uwid4, uamp4, chisq4, bins4, params4, p4 = np.transpose(data)
+
+        select1 = (decay_time4 < decay_time_range[1]) & (decay_time4 > decay_time_range[0])
+
+        event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, upos4, uwid4, uamp4, chisq4, bins4, params4, p4 = event_ID4[select1], decay_time4[select1], hits4[select1], layerID4[select1], columnID4[select1], cellID4[select1], pos4[select1], wid4[select1], amp4[select1], upos4[select1], uwid4[select1], uamp4[select1], chisq4[select1], bins4[select1], params4[select1], p4[select1]
+
+        select1 = (hits4 < hits_range[1]) & (hits4 > hits_range[0])
+
+        event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, upos4, uwid4, uamp4, chisq4, bins4, params4, p4 = event_ID4[select1], decay_time4[select1], hits4[select1], layerID4[select1], columnID4[select1], cellID4[select1], pos4[select1], wid4[select1], amp4[select1], upos4[select1], uwid4[select1], uamp4[select1], chisq4[select1], bins4[select1], params4[select1], p4[select1]
+
+        return event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, upos4, uwid4, uamp4, chisq4, bins4, params4, p4
+
 def fit_function(x, pos1, pos2, wid1, wid2, amp1, amp2, r1, r2):
     """Fit function for two merged bifurcated gaussians."""
     bi_gaussian1 = bi_gaussian(x, pos1, wid1, amp1, r1)
@@ -89,7 +195,6 @@ def get_range(time):
 
 
 def get_range_plot(n, bins):
-# def get_range_plot(time):
     """Return a tmin and tmax that covers an appropriate amount of the data for plotting."""
     peak_height = get_peak(n, bins)[0]
     cutoff = max(int(peak_height/10), 2)
@@ -112,9 +217,9 @@ def get_FWHM(n, bins):
     return FWHM
 
 
-def get_range_fit(n, bins, peak_height):
+def get_range_fit(n, bins, peak_height, cutoff=3):
     """Return a tmin and tmax that covers an appropriate amount of the data for fitting."""
-    third_max = int(peak_height/3)
+    third_max = int(peak_height/cutoff)
     in_range = n >= third_max
     bins = bins[:-1]
     bins = bins[in_range]

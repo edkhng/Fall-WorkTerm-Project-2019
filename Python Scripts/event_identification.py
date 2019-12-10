@@ -16,9 +16,9 @@ from scipy.stats import chisquare
 energy = 100
 
 fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_double_bi-gaussian_tau.csv'.format(energy)
-fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/50 TeV/fitting_params_double_bi-gaussian_e.csv'#.format(energy)
+fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_double_bi-gaussian_e.csv'.format(energy)
 fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_single_bi-gaussian_tau.csv'.format(energy)
-fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/50 TeV/fitting_params_single_bi-gaussian_e.csv'#.format(energy)
+fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_single_bi-gaussian_e.csv'.format(energy)
 
 data1 = np.loadtxt(fname1, delimiter=',', comments='#')
 data2 = np.loadtxt(fname2, delimiter=',', comments='#')

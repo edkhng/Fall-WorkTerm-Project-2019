@@ -16,33 +16,49 @@ from scipy.stats import chisquare
 energy = 100
 
 fname1 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_double_bi-gaussian_tau.csv'.format(energy)
-fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_double_bi-gaussian_e.csv'.format(energy)
+fname2 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/50 TeV/fitting_params_double_bi-gaussian_e.csv'#.format(energy)
 fname3 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_single_bi-gaussian_tau.csv'.format(energy)
-fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/fitting_params_single_bi-gaussian_e.csv'.format(energy)
+fname4 = 'C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/50 TeV/fitting_params_single_bi-gaussian_e.csv'#.format(energy)
 
 data1 = np.loadtxt(fname1, delimiter=',', comments='#')
 data2 = np.loadtxt(fname2, delimiter=',', comments='#')
 data3 = np.loadtxt(fname3, delimiter=',', comments='#')
 data4 = np.loadtxt(fname4, delimiter=',', comments='#')
 
-hits_range = (200000, 360000)
-decay_time_range = (30, 60)
+hits_range = (40000, 360000)
+decay_time_range = (0, 60)
 
-print("Total number of fits for each function")
-print(np.shape(data1)[1])
-print(np.shape(data2)[1])
-print(np.shape(data3)[1])
-print(np.shape(data4)[1])
+print("Number of inf in chi^2")
+print(len(data1[:,22][np.isinf(data1[:,22])]))
+print(len(data2[:,22][np.isinf(data2[:,22])]))
+print(len(data3[:,14][np.isinf(data3[:,14])]))
+print(len(data4[:,14][np.isinf(data4[:,14])]))
 
-clean_data1 = find_good_fits(data1)
-clean_data2 = find_good_fits(data2)
+print("\nTotal number of fits for each function")
+print(np.shape(data1)[0])
+print(np.shape(data2)[0])
+print(np.shape(data3)[0])
+print(np.shape(data4)[0])
+
+clean_data1, clean_data3 = find_good_fits(data1, data3)
+clean_data2, clean_data4 = find_good_fits(data2, data4)
+
+print("\nNumber of fits after filtering")
+print(len(clean_data1[0][:]))
+print(len(clean_data2[0][:]))
+print(len(clean_data3[0][:]))
+print(len(clean_data4[0][:]))
 
 event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = get_fit_data(clean_data1, hits_range, decay_time_range)
 event_ID2, decay_time2, hits2, layerID2, columnID2, cellID2, pos2a, pos2b, wid2a, wid2b, amp2a, amp2b, r2a, r2b, upos2a, upos2b, uwid2a, uwid2b, uamp2a, uamp2b, ur2a, ur2b, chisq2, bins2, params2, p2 = get_fit_data(clean_data2)
-event_ID3, decay_time3, hits3, layerID3, columnID3, cellID3, pos3, wid3, amp3, r3, upos3, uwid3, uamp3, ur3, chisq3, bins3, params3, p3 = get_fit_data(data3, hits_range, decay_time_range)
-event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, r4, upos4, uwid4, uamp4, ur4, chisq4, bins4, params4, p4 = get_fit_data(data4)
+event_ID3, decay_time3, hits3, layerID3, columnID3, cellID3, pos3, wid3, amp3, r3, upos3, uwid3, uamp3, ur3, chisq3, bins3, params3, p3 = get_fit_data(clean_data3, hits_range, decay_time_range)
+event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, r4, upos4, uwid4, uamp4, ur4, chisq4, bins4, params4, p4 = get_fit_data(clean_data4)
 
-print("\nNumber of fits to analyze after filtering")
+# event_ID1, decay_time1, hits1, layerID1, columnID1, cellID1, pos1a, pos1b, wid1a, wid1b, amp1a, amp1b, r1a, r1b, upos1a, upos1b, uwid1a, uwid1b, uamp1a, uamp1b, ur1a, ur1b, chisq1, bins1, params1, p1 = event_ID1[:-1], decay_time1[:-1], hits1[:-1], layerID1[:-1], columnID1[:-1], cellID1[:-1], pos1a[:-1], pos1b[:-1], wid1a[:-1], wid1b[:-1], amp1a[:-1], amp1b[:-1], r1a[:-1], r1b[:-1], upos1a[:-1], upos1b[:-1], uwid1a[:-1], uwid1b[:-1], uamp1a[:-1], uamp1b[:-1], ur1a[:-1], ur1b[:-1], chisq1[:-1], bins1[:-1], params1[:-1], p1[:-1]
+
+# event_ID3, decay_time3, hits3, layerID3, columnID3, cellID3, pos3, wid3, amp3, r3, upos3, uwid3, uamp3, ur3, chisq3, bins3, params3, p3 = event_ID3[:-3], decay_time3[:-3], hits3[:-3], layerID3[:-3], columnID3[:-3], cellID3[:-3], pos3[:-3], wid3[:-3], amp3[:-3], r3[:-3], upos3[:-3], uwid3[:-3], uamp3[:-3], ur3[:-3], chisq3[:-3], bins3[:-3], params3[:-3], p3[:-3]
+
+print("\nNumber of fits to analyze in hit range and decay time range")
 print(len(event_ID1))
 print(len(event_ID2))
 print(len(event_ID3))
@@ -88,223 +104,294 @@ for i in range(len(wid2a)):
 
 
 plt.figure(figsize=(10,7))
-plt.hist(time_diff1, bins=10, range=(0,36), histtype='step', label='tau events')
-plt.hist(time_diff2, bins=10, range=(0,36), histtype='step', label='e- events')
+plt.hist(time_diff1, bins=20, range=(0,100), density=True, histtype='step', label='tau events')
+plt.hist(time_diff2, bins=20, range=(0,100), density=True, histtype='step', label='e- events')
 plt.xlabel('Time difference [ns]')
-plt.ylabel('Frequency')
+plt.ylabel('Normalized bincount')
 plt.xlim(0)
 plt.title('Time difference Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/time_diff.png'.format(energy))
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/time_diff.png'.format(energy))
 
 plt.figure(figsize=(10,7))
-plt.hist(amp_ratio1, bins=5, range=(1,4), histtype='step', label='tau events')
-plt.hist(amp_ratio2, bins=5, range=(1,4), histtype='step', label='e- events')
+plt.hist(amp_ratio1, bins=5, range=(0.25,4), density=True, histtype='step', label='tau events')
+plt.hist(amp_ratio2, bins=5, range=(0.25,4), density=True, histtype='step', label='e- events')
 plt.xlabel('Amplitude Ratio')
-plt.ylabel('Frequency')
-plt.xlim(1)
+plt.ylabel('Normalized bincount')
+plt.xlim(0.25,4)
 plt.title('Amplitude Ratio Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/amp_ratio.png'.format(energy))
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/amp_ratio.png'.format(energy))
 
 plt.figure(figsize=(10,7))
-plt.hist(wid_ratio1, bins=5, range=(1,3), histtype='step', label='tau events')
-plt.hist(wid_ratio2, bins=5, range=(1,3), histtype='step', label='e- events')
+plt.hist(wid_ratio1, bins=5, range=(0.25,4), density=True, histtype='step', label='tau events')
+plt.hist(wid_ratio2, bins=5, range=(0.25,4), density=True, histtype='step', label='e- events')
 plt.xlabel('FWHM Ratio')
-plt.ylabel('Frequency')
-plt.xlim(1)
+plt.ylabel('Normalized bincount')
+plt.xlim(0.25,4)
 plt.title('FWHM Ratio Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/wid_diff.png'.format(energy))
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/wid_ratio.png'.format(energy))
 
 plt.figure(figsize=(10,7))
-plt.hist(chisq1, bins=18, range=(0,100), histtype='step', label='tau events')
-plt.hist(chisq2, bins=18, range=(0,100), histtype='step', label='e- events')
+plt.hist(chisq1, bins=20, range=(0,200), density=True, histtype='step', label='tau events')
+plt.hist(chisq2, bins=20, range=(0,200), density=True, histtype='step', label='e- events')
 plt.xlabel('Chi^2')
-plt.ylabel('Frequency')
+plt.ylabel('Normalized bincount')
 plt.xlim(0)
 plt.title('Double Bi_gaussian Chi^2 Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/chisq_double_bi_gaussian.png'.format(energy))
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisq_double_bi_gaussian.png'.format(energy))
 #
 plt.figure(figsize=(10,7))
-plt.hist(chisq3, bins=20, range=(0,300), histtype='step', label='tau events')
-plt.hist(chisq4, bins=20, range=(0,300), histtype='step', label='e- events')
+plt.hist(chisq3, bins=20, range=(0,1000), density=True, histtype='step', label='tau events')
+plt.hist(chisq4, bins=20, range=(0,1000), density=True, histtype='step', label='e- events')
 plt.xlabel('Chi^2')
-plt.ylabel('Frequency')
+plt.ylabel('Normalized bincount')
 plt.xlim(0)
 plt.title('Single Bi_gaussian Chi^2 Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/chisq_single_bi_gaussian.png'.format(energy))
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisq_single_bi_gaussian.png'.format(energy))
+
+# plt.figure(figsize=(10,7))
+# plt.hist(chisqdof1, bins=60, range=(0,30), density=True, histtype='step', label='tau events')
+# plt.hist(chisqdof2, bins=60, range=(0,30), density=True, histtype='step', label='e- events')
+# plt.xlabel('Chi^2/dof')
+# plt.ylabel('Normalized bincount')
+# plt.xlim(0)
+# plt.title('Double Bi_gaussian Chi^2/dof Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
+# plt.legend()
+# plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisqdof_double_bi_gaussian.png'.format(energy))
+#
+# plt.figure(figsize=(10,7))
+# plt.hist(chisqdof3, bins=50, range=(0,100), density=True, histtype='step', label='tau events')
+# plt.hist(chisqdof4, bins=50, range=(0,100), density=True, histtype='step', label='e- events')
+# plt.xlabel('Chi^2/dof')
+# plt.ylabel('Normalized bincount')
+# plt.xlim(0)
+# plt.title('Single Bi_gaussian Chi^2/dof Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
+# plt.legend()
+# plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisqdof_single_bi_gaussian.png'.format(energy))
 
 plt.figure(figsize=(10,7))
-plt.hist(chisqdof1, bins=15, range=(0,30), histtype='step', label='tau events')
-plt.hist(chisqdof2, bins=15, range=(0,30), histtype='step', label='e- events')
-plt.xlabel('Chi^2/dof')
-plt.ylabel('Frequency')
-plt.xlim(0)
-plt.title('Double Bi_gaussian Chi^2/dof Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
-plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/chisqdof_double_bi_gaussian.png'.format(energy))
-
-plt.figure(figsize=(10,7))
-plt.hist(chisqdof3, bins=20, range=(0,500), histtype='step', label='tau events')
-plt.hist(chisqdof4, bins=20, range=(0,500), histtype='step', label='e- events')
-plt.xlabel('Chi^2/dof')
-plt.ylabel('Frequency')
-plt.xlim(0)
-plt.title('Single Bi_gaussian Chi^2/dof Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
-plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/chisqdof_single_bi_gaussian.png'.format(energy))
-
-plt.figure(figsize=(10,7))
-plt.hist(p1, bins=15, range=(0,0.03), histtype='step', label='tau events')
-plt.hist(p2, bins=15, range=(0,0.03), histtype='step', label='e- events')
+plt.hist(p1, bins=20, range=(0,1), density=True, histtype='step', label='tau events')
+plt.hist(p2, bins=20, range=(0,1), density=True, histtype='step', label='e- events')
 plt.xlabel('p-value')
-plt.ylabel('Frequency')
+plt.ylabel('Normalized bincount')
 plt.xlim(0)
 plt.title('Double Bi_gaussian p-value Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/p-value_double_bi_gaussian.png'.format(energy))
-
-# trying chi^2 single/ chi^2 double, also p double/ p single
-
-event_ID_tau = []
-event_ID_e = []
-keep_tau = []
-keep_e = []
-
-for i in range(len(event_ID1)):
-    id = [event_ID1[i], layerID1[i], columnID1[i], cellID1[i]]
-    event_ID_tau.append(id)
-
-for i in range(len(event_ID2)):
-    id = [event_ID2[i], layerID2[i], columnID2[i], cellID2[i]]
-    event_ID_e.append(id)
-
-for i in range(len(event_ID3)):
-    id = [event_ID3[i], layerID3[i], columnID3[i], cellID3[i]]
-    if id in event_ID_tau:
-        keep_tau.append(True)
-    else:
-        keep_tau.append(False)
-
-for i in range(len(event_ID4)):
-    id = [event_ID4[i], layerID4[i], columnID4[i], cellID4[i]]
-    if id in event_ID_e:
-        keep_e.append(True)
-    else:
-        keep_e.append(False)
-
-event_ID3, decay_time3, hits3, layerID3, columnID3, cellID3, pos3, wid3, amp3, r3, upos3, uwid3, uamp3, ur3, chisq3, bins3, params3, p3 = event_ID3[keep_tau], decay_time3[keep_tau], hits3[keep_tau], layerID3[keep_tau], columnID3[keep_tau], cellID3[keep_tau], pos3[keep_tau], wid3[keep_tau], amp3[keep_tau], r3[keep_tau], upos3[keep_tau], uwid3[keep_tau], uamp3[keep_tau], ur3[keep_tau], chisq3[keep_tau], bins3[keep_tau], params3[keep_tau], p3[keep_tau]
-event_ID4, decay_time4, hits4, layerID4, columnID4, cellID4, pos4, wid4, amp4, r4, upos4, uwid4, uamp4, ur4, chisq4, bins4, params4, p4 = event_ID4[keep_e], decay_time4[keep_e], hits4[keep_e], layerID4[keep_e], columnID4[keep_e], cellID4[keep_e], pos4[keep_e], wid4[keep_e], amp4[keep_e], r4[keep_e], upos4[keep_e], uwid4[keep_e], uamp4[keep_e], ur4[keep_e], chisq4[keep_e], bins4[keep_e], params4[keep_e], p4[keep_e]
-
-chisq1 = chisq1[p3 > 0]
-chisq2 = chisq2[p4 > 0]
-chisq3 = chisq3[p3 > 0]
-chisq4 = chisq4[p4 > 0]
-p1 = p1[p3 > 0]
-p2 = p2[p4 > 0]
-p3 = p3[p3 > 0]
-p4 = p4[p4 > 0]
-
-# print(p4)
-# print(event_ID2[12])
-# print(layerID2[12])
-# print(columnID2[12])
-# print(cellID2[12])
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/p-value_double_bi_gaussian.png'.format(energy))
 
 plt.figure(figsize=(10,7))
-plt.hist(chisq1*chisq3, histtype='step', label='tau events')
-plt.hist(chisq2*chisq4, histtype='step', label='e- events')
-plt.xlabel('Chi^2 Single Bi_gaussian / Chi^2 Double Bi_gaussian')
-plt.ylabel('Frequency')
-# plt.xlim(0)
+plt.hist(p3, bins=50, range=(0,1), density=True, histtype='step', label='tau events')
+plt.hist(p4, bins=50, range=(0,1), density=True, histtype='step', label='e- events')
+plt.xlabel('p-value')
+plt.ylabel('Normalized bincount')
+plt.xlim(0)
+plt.title('Single Bi_gaussian p-value Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
+plt.legend()
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/p-value_single_bi_gaussian.png'.format(energy))
+
+# removing where p3, p4 = 0 so no divide by zero error
+chisq1 = chisq1[(p3 > 0) & (p1 > 0)]
+chisq2 = chisq2[(p4 > 0) & (p2 > 0)]
+chisq3 = chisq3[(p3 > 0) & (p1 > 0)]
+chisq4 = chisq4[(p4 > 0) & (p2 > 0)]
+
+time_diff1 = time_diff1[(p3 > 0) & (p1 > 0)]
+time_diff2 = time_diff2[(p4 > 0) & (p2 > 0)]
+
+params1 = params1[(p3 > 0) & (p1 > 0)]
+params2 = params2[(p4 > 0) & (p2 > 0)]
+params3 = params3[(p3 > 0) & (p1 > 0)]
+params4 = params4[(p4 > 0) & (p2 > 0)]
+
+bins1 = bins1[(p3 > 0) & (p1 > 0)]
+bins2 = bins2[(p4 > 0) & (p2 > 0)]
+bins3 = bins3[(p3 > 0) & (p1 > 0)]
+bins4 = bins4[(p4 > 0) & (p2 > 0)]
+
+select1 = (p3 > 0) & (p1 > 0)
+select2 = (p4 > 0) & (p2 > 0)
+
+p1 = p1[select1]
+p2 = p2[select2]
+p3 = p3[select1]
+p4 = p4[select2]
+
+chisqdof1 = chisq1/(bins1 - params1)
+chisqdof2 = chisq2/(bins2 - params2)
+chisqdof3 = chisq3/(bins3 - params3)
+chisqdof4 = chisq4/(bins4 - params4)
+
+print("\nNumber of fits to analyze after removing ones with p=0")
+print(len(p1))
+print(len(p2))
+print(len(p1))
+print(len(p2))
+
+plt.figure(figsize=(10,7))
+plt.hist(chisq1/chisq3, bins=40, range=(0,2), density=True, histtype='step', label='tau events')
+plt.hist(chisq2/chisq4, bins=40, range=(0,2), density=True, histtype='step', label='e- events')
+plt.xlabel('Chi^2 Double Bi_gaussian / Chi^2 Single Bi_gaussian')
+plt.ylabel('Normalized bincount')
+plt.xlim(0)
 plt.title('Chi^2 ratio Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/chi^2_ratio.png'.format(energy))
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chi^2_ratio.png'.format(energy))
 
-bins = np.linspace(1, np.log10(max(p1/p3)), 15)
-plt.figure(figsize=(10,7))
-plt.hist(p1/p3, bins=10**bins, histtype='step', label='tau events')
-plt.hist(p2/p4, bins=10**bins, histtype='step', label='e- events')
-plt.xlabel('p-value Single Bi_gaussian/ p-value Double Bi_gaussian')
-plt.ylabel('Frequency')
+# plt.figure(figsize=(10,7))
+# plt.hist(chisqdof1/chisqdof3, bins=50, range=(0,5), density=True, histtype='step', label='tau events')
+# plt.hist(chisqdof2/chisqdof4, bins=50, range=(0,5), density=True, histtype='step', label='e- events')
+# plt.xlabel('Chi^2/dof Double Bi_gaussian / Chi^2/dof Single Bi_gaussian')
+# plt.ylabel('Normalized bincount')
 # plt.xlim(0)
-plt.xscale('log')
+# plt.title('Chi^2/dof ratio Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
+# plt.legend()
+# plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chi^2_dof_ratio.png'.format(energy))
+
+
+bins = np.linspace(0.5, np.log10(1.1*max(p1/p3)), 20)
+plt.figure(figsize=(10,7))
+plt.hist(np.log10(p1/p3), bins=bins, density=True, histtype='step', label='tau events')
+plt.hist(np.log10(p2/p4), bins=bins, density=True, histtype='step', label='e- events')
+plt.xlabel('p-value Double Bi_gaussian/ p-value Single Bi_gaussian log scale')
+plt.ylabel('Normalized bincount')
+plt.xlim(0)
 plt.title('p-value ratio Distribution; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/bi_gaussian/p-value_ratio.png'.format(energy))
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/p-value_ratio.png'.format(energy))
 
-n1, bins1 = np.histogram(time_diff1, bins=20, range=(0,100))
-n2, bins2 = np.histogram(time_diff2, bins=20, range=(0,100))
+
+#### Scatterplots ###
+plt.figure(figsize=(10,7))
+plt.scatter(p1, p3, label='tau events')
+plt.scatter(p2, p4, label='e- events')
+plt.xlabel('p-value double')
+plt.ylabel('p-value single')
+plt.xlim(0,1)
+plt.ylim(0,1)
+plt.legend()
+plt.title('p-value Scatterplot')
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/p-value_scatterplot.png'.format(energy))
+
+plt.figure(figsize=(10,7))
+plt.scatter(time_diff1, np.log10(p1/p3), label='tau events')
+plt.scatter(time_diff2, np.log10(p2/p4), label='e- events')
+plt.xlabel('time difference [ns]')
+plt.ylabel('p-value ratio log')
+plt.xlim(0,100)
+plt.ylim(0,np.log10(1.1*max(p1/p3)))
+plt.legend()
+plt.title('p-value ratio vs time_diff Scatterplot')
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/p-value_time_diff_scaterplot.png'.format(energy))
+
+plt.figure(figsize=(10,7))
+plt.scatter(chisq1, chisq3, label='tau events')
+plt.scatter(chisq2, chisq4, label='e- events')
+plt.xlabel('chisq double')
+plt.ylabel('chisq single')
+plt.xlim(0,200)
+plt.ylim(0,1000)
+plt.legend()
+plt.title('chisq Scatterplot')
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisq_scaterplot.png'.format(energy))
+
+plt.figure(figsize=(10,7))
+plt.scatter(chisq1, time_diff1, label='tau events')
+plt.scatter(chisq2, time_diff2, label='e- events')
+plt.xlabel('chisq double')
+plt.ylabel('time_diff')
+plt.xlim(0,200)
+plt.ylim(0,100)
+plt.legend()
+plt.title('chisq double vs time diff Scatterplot')
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisq_time_diff_scaterplot.png'.format(energy))
+
+plt.figure(figsize=(10,7))
+plt.scatter(chisq1/chisq3, time_diff1, label='tau events')
+plt.scatter(chisq2/chisq4, time_diff2, label='e- events')
+plt.xlabel('chisq ratio')
+plt.ylabel('time_diff')
+plt.xlim(0,2)
+plt.ylim(0,100)
+plt.legend()
+plt.title('chisq ratio vs time diff Scatterplot')
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisq_ratio_time_diff_scaterplot.png'.format(energy))
+
+plt.figure(figsize=(10,7))
+plt.scatter(chisq1/chisq3, np.log10(p1/p3), label='tau events')
+plt.scatter(chisq2/chisq4, np.log10(p2/p4), label='e- events')
+plt.xlabel('chisq ratio')
+plt.ylabel('p-value ratio log')
+plt.xlim(0,2)
+plt.ylim(0, np.log10(1.1*max(p1/p3)))
+plt.legend()
+plt.title('chisq ratio vs p-value ratio Scatterplot')
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/chisq_p_ratio_scaterplot.png'.format(energy))
+
+# plt.show()
+
+
+N_tau = len(p1)
+N_e = len(p2)
+N_tot = N_e + N_tau
+
+bins = np.linspace(0.5, np.log10(1.1*max(p1/p3)), 40)
+n1, bins1 = np.histogram(time_diff1, bins=25, range=(0,100))
+n2, bins2 = np.histogram(time_diff2, bins=25, range=(0,100))
+n3, bins3 = np.histogram(chisq1/chisq3, bins=40, range=(0,2))
+n4, bins4 = np.histogram(chisq2/chisq4, bins=40, range=(0,2))
+n5, bins5 = np.histogram(np.log10(p1/p3), bins=bins)
+n6, bins6 = np.histogram(np.log10(p2/p4), bins=bins)
 
 fpr1 = []
 tpr1 = []
 tau = e = 0
-N_tau = len(time_diff1)
-N_e = len(time_diff2)
-N_tot = N_e + N_tau
 for i in range(len(bins1)-1):
     tau += n1[-i - 1]
     e += n2[-i - 1]
     tpr1.append(tau/N_tau)
     fpr1.append(e/N_e)
 
-fpr2 = []
-tpr2 = []
-bins = np.linspace(1, np.log10(max(p1/p3)*1.2), 20)
-n1, bins1 = np.histogram(p1/p3, bins=10**bins)
-n2, bins2 = np.histogram(p2/p4, bins=10**bins)
-
+fpr2 = [0]
+tpr2 = [0]
 tau = e = 0
-N_tau = len(p1)
-N_e = len(p2)
-N_tot = N_e + N_tau
-for i in range(len(bins1)-1):
-    tau += n1[-i - 1]
-    e += n2[-i - 1]
+for i in range(len(bins3)-1):
+    tau += n3[i]
+    e += n4[i]
     tpr2.append(tau/N_tau)
     fpr2.append(e/N_e)
 
 fpr3 = []
 tpr3 = []
-bins = np.linspace(1, np.log10(max(p1/p3)), 20)
-n1, bins1 = np.hist(p1/p3, bins=10**bins)
-n1, bins1 = np.hist(p2/p4, bins=10**bins)
-
 tau = e = 0
-N_tau = len(time_diff1)
-N_e = len(time_diff2)
-N_tot = N_e + N_tau
-for i in range(len(bins1)-1):
-    tau += n1[-i - 1]
-    e += n2[-i - 1]
+for i in range(len(bins5)-1):
+    tau += n5[-i - 1]
+    e += n6[-i - 1]
     tpr3.append(tau/N_tau)
     fpr3.append(e/N_e)
 
-fpr2 = []
-tpr2 = []
-bins = np.linspace(1, np.log10(max(p1/p3)), 20)
-n1, bins1 = np.hist(p1/p3, bins=10**bins)
-n1, bins1 = np.hist(p2/p4, bins=10**bins)
+tpr1.append(1)
+fpr1.append(1)
+tpr2.append(1)
+fpr2.append(1)
+tpr3.append(1)
+fpr3.append(1)
 
-tau = e = 0
-N_tau = len(time_diff1)
-N_e = len(time_diff2)
-N_tot = N_e + N_tau
-for i in range(len(bins1)-1):
-    tau += n1[-i - 1]
-    e += n2[-i - 1]
-    tpr2.append(tau/N_tau)
-    fpr2.append(e/N_e)
+auc1 = np.trapz(tpr1, fpr1)
+auc2 = np.trapz(tpr2, fpr2)
+auc3 = np.trapz(tpr3, fpr3)
 
-
-plt.plot(fpr1, tpr1, label='ROC time_difference')
-plt.plot(fpr2, tpr2, label='ROC p-value ratio')
+plt.figure(figsize=(10,7))
+plt.plot(fpr1, tpr1, label='ROC time_difference AUC={:.2f}'.format(auc1))
+plt.plot(fpr2, tpr2, label='ROC chi^2 ratio AUC={:.2f}'.format(auc2))
+plt.plot(fpr3, tpr3, label='ROC p-value ratio AUC={:.2f}'.format(auc3))
 plt.plot([0, 1], [0, 1], color='darkblue', linestyle='--')
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.title('ROC Curve')
+plt.title('ROC Curve; decay_range:{}-{} ns, hit_range: {}-{}'.format(*decay_time_range, *hits_range))
 plt.legend()
-plt.show()
+plt.savefig('C:/Users/Edmond Ng/Documents/WorkTerm 2/Data/{} TeV/Plots/roc_curve.png'.format(energy))
+# plt.show()
